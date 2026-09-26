@@ -1,0 +1,1763 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TRS6 · Đấu trường từ vựng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff8ec; --card:#ffffff; --ink:#2b1e3d; --ink-soft:#6b5c85;
+  --c1:#FF5D73; --c1-soft:#FFE1E5;
+  --c2:#17A398; --c2-soft:#D8F5F0;
+  --c3:#7C5CFC; --c3-soft:#EBE3FF;
+  --c4:#FFB627; --c4-soft:#FFF2D6;
+  --c5:#2EC4F1; --c5-soft:#DBF3FC;
+  --green:#1FA971; --green-soft:#DCF7EA;
+  --red:#F03E5E; --red-soft:#FFE1E8;
+  --line:#EFE6D8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1a1626; --card:#241f36; --ink:#f2ecff; --ink-soft:#b3a6d6;
+    --c1-soft:#3a1e28; --c2-soft:#153631; --c3-soft:#2c2149; --c4-soft:#3a2f10; --c5-soft:#123540;
+    --green-soft:#123a29; --red-soft:#3a1520; --line:#352d4d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1a1626; --card:#241f36; --ink:#f2ecff; --ink-soft:#b3a6d6;
+  --c1-soft:#3a1e28; --c2-soft:#153631; --c3-soft:#2c2149; --c4-soft:#3a2f10; --c5-soft:#123540;
+  --green-soft:#123a29; --red-soft:#3a1520; --line:#352d4d;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Quicksand',-apple-system,sans-serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);
+  min-height:100%; position:relative; overflow-x:hidden;
+}
+body::before, body::after{
+  content:''; position:fixed; border-radius:50%; z-index:0; opacity:.35; filter:blur(2px);
+}
+body::before{ width:280px; height:280px; background:var(--c5); top:-100px; right:-100px; }
+body::after{ width:220px; height:220px; background:var(--c4); bottom:-80px; left:-90px; }
+.wrap{max-width:660px;margin:0 auto;padding:22px 18px 50px; position:relative; z-index:1;}
+h1,.heading{font-family:'Baloo 2',cursive;}
+
+.examhead{
+  background:linear-gradient(135deg, var(--c3), var(--c1)); border-radius:20px;
+  padding:20px 22px; margin-bottom:16px; color:#fff; box-shadow:0 10px 24px -12px rgba(124,92,252,.5);
+}
+.examhead .top-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+.examhead h1{font-size:1.4rem; font-weight:700; margin:0 0 3px;}
+.examhead .code{font-size:.78rem; opacity:.9;}
+.stampbox{
+  background:rgba(255,255,255,.22); border:1.5px solid rgba(255,255,255,.6); border-radius:20px;
+  padding:6px 14px; font-family:'Baloo 2',cursive; font-weight:700; font-size:.8rem; white-space:nowrap;
+}
+.scorebar{display:flex; gap:18px; margin-top:14px; font-size:.85rem; opacity:.95;}
+.scorebar b{font-family:'Baloo 2',cursive; font-size:1.05rem;}
+
+.modetabs{display:flex; gap:10px; margin-bottom:16px;}
+.modetab{
+  flex:1; text-align:center; padding:12px 8px; border-radius:14px; border:none;
+  background:var(--card); font-weight:700; font-size:.9rem; cursor:pointer; color:var(--ink-soft);
+  box-shadow:0 2px 0 var(--line); position:relative;
+}
+.modetab.active{background:var(--c2); color:#fff; box-shadow:0 4px 0 #0d7d74;}
+.modetab.locked{opacity:.5; cursor:not-allowed;}
+.locktip{
+  position:absolute; top:105%; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--bg);
+  font-size:.72rem; padding:6px 10px; border-radius:8px; white-space:nowrap; display:none; z-index:5; font-weight:600;
+}
+.modetab.locked:hover .locktip{display:block;}
+
+.navgrid{
+  display:grid; grid-template-columns:repeat(10,1fr); gap:6px;
+  background:var(--card); border-radius:16px; padding:14px; margin-bottom:14px; box-shadow:0 2px 0 var(--line);
+}
+.navcell{
+  aspect-ratio:1; border-radius:8px; border:none; background:var(--bg);
+  font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink-soft);
+}
+.navcell.current{box-shadow:0 0 0 2.5px var(--c3) inset; color:var(--c3); background:var(--c3-soft);}
+.navcell.correct{background:var(--green); color:#fff;}
+.navcell.wrong{background:var(--red); color:#fff;}
+.navlegend{display:flex; gap:14px; font-size:.74rem; color:var(--ink-soft); flex-wrap:wrap; margin:-4px 0 14px 4px;}
+.navlegend span{display:inline-flex; align-items:center; gap:5px;}
+.dot{width:10px;height:10px;border-radius:3px; display:inline-block;}
+
+.qcard{
+  background:var(--card); border-radius:20px; padding:24px 22px 22px;
+  box-shadow:0 4px 0 var(--line);
+}
+.qhead{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
+.qnum-badge{
+  font-family:'Baloo 2',cursive; font-weight:700; font-size:1.15rem; color:#fff;
+  width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.qhint{font-size:.78rem; color:var(--ink-soft); font-weight:600;}
+.sentence{font-size:1.28rem; line-height:1.7; margin:0 0 20px; font-weight:500;}
+.blank{
+  display:inline-block; min-width:64px; text-align:center; border-radius:8px; padding:2px 10px;
+  font-weight:800; margin:0 2px;
+}
+
+.options{display:flex; flex-direction:column; gap:10px;}
+.opt{
+  display:flex; align-items:center; gap:12px; text-align:left; width:100%;
+  font-family:'Quicksand',sans-serif; font-size:1.02rem; font-weight:600;
+  padding:13px 16px; border-radius:14px; border:2px solid var(--line); background:var(--bg);
+  color:var(--ink); cursor:pointer; transition:transform .1s, box-shadow .1s;
+}
+.opt:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 3px 0 var(--line);}
+.opt:disabled{cursor:default;}
+.opt .letter{
+  flex-shrink:0; width:28px; height:28px; border-radius:9px; background:var(--card);
+  display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.82rem; color:var(--ink-soft);
+}
+.opt.correct{background:var(--green-soft); border-color:var(--green);}
+.opt.correct .letter{background:var(--green); color:#fff;}
+.opt.wrong{background:var(--red-soft); border-color:var(--red);}
+.opt.wrong .letter{background:var(--red); color:#fff;}
+.mark{margin-left:auto; font-weight:800; font-size:1.2rem;}
+.mark.correct{color:var(--green);}
+.mark.wrong{color:var(--red);}
+
+.explain{margin-top:20px; border-radius:16px; overflow:hidden; display:none;}
+.explain.show{display:block; animation:popin .3s ease;}
+@keyframes popin{from{opacity:0; transform:scale(.97) translateY(-6px);} to{opacity:1; transform:scale(1) translateY(0);}}
+.explain-top{display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:16px 16px 0 0;}
+.explain-emoji{font-size:2.3rem; line-height:1; flex-shrink:0;}
+.explain-top .verdict{font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem;}
+.explain-top .wordtag{font-size:.9rem; opacity:.85; margin-top:2px;}
+.explain.right-verdict .explain-top{background:var(--green-soft); color:var(--green);}
+.explain.wrong-verdict .explain-top{background:var(--red-soft); color:var(--red);}
+.explain-body{padding:16px 18px; background:var(--bg); font-size:.95rem; line-height:1.65;}
+.full-sentence-box{background:var(--card); border-radius:12px; padding:13px 15px; margin-bottom:14px; box-shadow:0 2px 0 var(--line);}
+.fs-label{font-size:.72rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;}
+.postag{background:var(--c3-soft); color:var(--c3); padding:2px 8px; border-radius:7px; text-transform:none; letter-spacing:0;}
+.fs-text{font-size:1.06rem; line-height:1.6;}
+.hlword{color:var(--c1); font-weight:800;}
+.trans-box{background:var(--c5-soft); border-radius:12px; padding:13px 15px; margin:14px 0 0; box-shadow:0 2px 0 var(--line);}
+.trans-box .fs-label{color:var(--c5);}
+.trans-text{color:var(--ink); font-weight:500;}
+.exp-sections{display:flex; flex-direction:column; gap:11px; margin-bottom:4px;}
+.exp-line{display:flex; gap:10px; align-items:flex-start;}
+.exp-icon{font-size:1.15rem; flex-shrink:0; margin-top:1px;}
+.exp-label{font-size:.72rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; display:block; margin-bottom:2px;}
+.tip-box{margin-top:14px; padding:12px 15px; border-radius:12px; background:var(--c4-soft); font-size:.92rem; display:flex; gap:9px; align-items:flex-start; line-height:1.55;}
+.tip-box .tipicon{flex-shrink:0; font-size:1.1rem;}
+
+.actions{display:flex; justify-content:space-between; margin-top:20px; gap:10px;}
+button.navbtn, button.next{
+  font-family:'Quicksand',sans-serif; font-weight:700; font-size:.9rem;
+  border:none; padding:12px 20px; border-radius:14px; cursor:pointer;
+}
+button.navbtn{background:var(--bg); color:var(--ink-soft); box-shadow:0 2px 0 var(--line);}
+button.next{background:var(--c1); color:#fff; display:none; margin-left:auto; box-shadow:0 3px 0 #c23955;}
+button.next.show{display:inline-block;}
+button.navbtn:disabled{opacity:.35; cursor:default;}
+
+.done{padding:4px 0 20px;}
+.resultcard{background:var(--card); border-radius:22px; padding:30px 22px; text-align:center; box-shadow:0 4px 0 var(--line);}
+.resultcard .bigscore{font-family:'Baloo 2',cursive; font-size:3.2rem; font-weight:800; margin:8px 0 2px; background:linear-gradient(135deg,var(--c3),var(--c1)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.resultcard .pct{font-size:.95rem; color:var(--ink-soft); margin-bottom:16px;}
+.grade-stamp{display:inline-block; background:var(--green-soft); color:var(--green); font-family:'Baloo 2',cursive; font-weight:700; font-size:1.1rem; padding:9px 22px; border-radius:16px; margin-bottom:18px;}
+.grade-stamp.low{background:var(--red-soft); color:var(--red);}
+.grade-stamp.mid{background:var(--c4-soft); color:#a3690a;}
+.resultbtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px;}
+.btn-primary{background:var(--c1); color:#fff; border:none; padding:13px 22px; border-radius:14px; font-weight:700; cursor:pointer; font-family:'Quicksand',sans-serif; box-shadow:0 3px 0 #c23955;}
+.btn-ghost{background:var(--bg); border:none; color:var(--ink-soft); padding:13px 22px; border-radius:14px; font-weight:700; cursor:pointer; font-family:'Quicksand',sans-serif; box-shadow:0 2px 0 var(--line);}
+.missed-list{text-align:left; margin-top:24px; padding-top:18px; border-top:2px dashed var(--line);}
+.missed-list h3{font-family:'Baloo 2',cursive; font-size:1.05rem; margin:0 0 10px;}
+.missed-item{padding:10px 12px; border-radius:10px; background:var(--red-soft); margin-bottom:8px; font-size:.9rem;}
+.missed-item b{color:var(--red);}
+.batchnote{font-size:.8rem; color:var(--ink-soft); text-align:center; margin-top:18px; line-height:1.6;}
+
+.studywrap{display:none;}
+.studywrap.show{display:block;}
+.flashcard{border-radius:22px; padding:36px 26px; text-align:center; min-height:250px; display:flex; flex-direction:column; justify-content:center; gap:8px; color:#fff; box-shadow:0 10px 26px -12px rgba(0,0,0,.35);}
+.flash-emoji{font-size:3rem; margin-bottom:4px;}
+.flash-word{font-family:'Baloo 2',cursive; font-size:1.9rem; font-weight:700;}
+.flash-pos{font-size:.8rem; opacity:.85; letter-spacing:.4px; font-weight:600;}
+.flash-def{font-size:1.08rem; margin-top:4px; font-weight:600;}
+.flash-ex{font-size:.92rem; opacity:.92; font-style:italic; margin-top:16px; line-height:1.55; border-top:1.5px dashed rgba(255,255,255,.4); padding-top:14px;}
+.flashnav{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
+.flashcount{font-size:.85rem; color:var(--ink-soft); font-weight:700;}
+.studyintro{font-size:.9rem; color:var(--ink-soft); text-align:center; margin-bottom:14px; line-height:1.6; font-weight:600;}
+
+.chapter-grid{display:flex; flex-direction:column; gap:12px;}
+.chapter-card{
+  display:flex; align-items:center; gap:16px; padding:18px 20px; border-radius:18px; cursor:pointer;
+  color:#fff; box-shadow:0 4px 0 rgba(0,0,0,.12); border:none; text-align:left; width:100%; font-family:'Quicksand',sans-serif;
+}
+.chapter-card:disabled{cursor:not-allowed; opacity:.55; box-shadow:none; filter:grayscale(.4);}
+.chapter-num{font-family:'Baloo 2',cursive; font-size:1.7rem; font-weight:800; width:46px; height:46px; border-radius:14px; background:rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.chapter-info{flex:1;}
+.chapter-title{font-family:'Baloo 2',cursive; font-weight:700; font-size:1.12rem;}
+.chapter-range{font-size:.82rem; opacity:.9; margin-top:2px;}
+.chapter-status{font-size:.78rem; font-weight:700; background:rgba(255,255,255,.25); padding:5px 12px; border-radius:10px; white-space:nowrap;}
+.studypicker-intro{font-size:.9rem; color:var(--ink-soft); text-align:center; margin-bottom:16px; line-height:1.6; font-weight:600;}
+
+/* start screen */
+.startcard{background:var(--card); border-radius:22px; padding:30px 24px; text-align:center; box-shadow:0 4px 0 var(--line);}
+.startcard .starticon{font-size:2.6rem; margin-bottom:8px;}
+.startcard h2{font-family:'Baloo 2',cursive; font-size:1.3rem; margin:0 0 8px;}
+.startcard p{color:var(--ink-soft); font-size:.92rem; line-height:1.6; margin:0 0 20px;}
+.sizepick{display:flex; gap:10px; justify-content:center; margin-bottom:22px; flex-wrap:wrap;}
+.sizebtn{
+  border:2px solid var(--line); background:var(--bg); color:var(--ink-soft); font-family:'Baloo 2',cursive;
+  font-weight:700; font-size:1rem; padding:12px 20px; border-radius:14px; cursor:pointer;
+}
+.sizebtn.active{border-color:var(--c1); background:var(--c1-soft); color:var(--c1);}
+.startgo{background:linear-gradient(135deg,var(--c1),var(--c3)); color:#fff; border:none; padding:15px 30px; border-radius:16px; font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem; cursor:pointer; box-shadow:0 4px 0 #a63a63;}
+.partlabel{display:inline-block; background:var(--c5-soft); color:#0b7ba8; font-weight:700; font-size:.78rem; padding:5px 12px; border-radius:10px; margin-bottom:14px;}
+
+/* multiplayer */
+.mp-card{background:var(--card); border-radius:20px; padding:26px 22px; box-shadow:0 4px 0 var(--line); text-align:center;}
+.mp-card h2{font-family:'Baloo 2',cursive; font-size:1.25rem; margin:6px 0 8px;}
+.mp-card p{color:var(--ink-soft); font-size:.9rem; line-height:1.6; margin:0 0 18px;}
+.mp-note{font-size:.78rem; color:var(--ink-soft); background:var(--c5-soft); padding:10px 14px; border-radius:12px; text-align:left; line-height:1.55; margin-top:16px;}
+.nameinput{width:100%; padding:13px 16px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font-family:'Quicksand',sans-serif; font-size:1rem; font-weight:600; margin-bottom:14px; text-align:center;}
+.mp-actions{display:flex; flex-direction:column; gap:12px;}
+.mp-btn{padding:15px; border-radius:14px; border:none; font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem; cursor:pointer;}
+.mp-btn.create{background:linear-gradient(135deg,var(--c1),var(--c3)); color:#fff; box-shadow:0 4px 0 #a63a63;}
+.mp-btn.join{background:var(--c2-soft); color:var(--c2); box-shadow:0 3px 0 rgba(0,0,0,.05);}
+.joinrow{display:flex; gap:8px;}
+.joinrow input{flex:1; text-align:center; letter-spacing:3px; text-transform:uppercase; font-family:'Baloo 2',cursive; font-size:1.15rem;}
+
+.roomcode-box{background:linear-gradient(135deg,var(--c3),var(--c1)); border-radius:18px; padding:20px; text-align:center; color:#fff; margin-bottom:16px;}
+.roomcode-label{font-size:.78rem; opacity:.9; font-weight:600; margin-bottom:6px;}
+.roomcode-value{font-family:'Baloo 2',cursive; font-size:2.2rem; font-weight:800; letter-spacing:6px;}
+.roomcode-hint{font-size:.78rem; opacity:.85; margin-top:6px;}
+.copybtn{background:rgba(255,255,255,.25); border:1.5px solid rgba(255,255,255,.6); color:#fff; padding:7px 14px; border-radius:10px; font-family:'Quicksand',sans-serif; font-weight:700; font-size:.8rem; cursor:pointer; margin-top:10px;}
+
+.player-list{display:flex; flex-direction:column; gap:8px; margin-bottom:16px;}
+.player-row{display:flex; align-items:center; gap:10px; background:var(--card); border-radius:12px; padding:10px 14px; box-shadow:0 2px 0 var(--line);}
+.player-dot{width:9px;height:9px;border-radius:50%;background:var(--green); flex-shrink:0;}
+.player-name{font-weight:700; flex:1;}
+.player-role{font-size:.72rem; color:var(--ink-soft); background:var(--bg); padding:3px 9px; border-radius:8px;}
+
+.chatbox{background:var(--card); border-radius:16px; padding:14px; box-shadow:0 2px 0 var(--line); margin-bottom:16px;}
+.chat-messages{max-height:160px; overflow-y:auto; display:flex; flex-direction:column; gap:7px; margin-bottom:10px; padding-right:4px;}
+.chat-msg{font-size:.87rem; line-height:1.4;}
+.chat-msg b{color:var(--c3);}
+.chat-msg.me b{color:var(--c1);}
+.chat-input-row{display:flex; gap:8px;}
+.chat-input-row input{flex:1; padding:9px 12px; border-radius:10px; border:1.5px solid var(--line); background:var(--bg); color:var(--ink); font-family:'Quicksand',sans-serif; font-size:.88rem;}
+.chat-input-row button{background:var(--c1); color:#fff; border:none; padding:9px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-family:'Quicksand',sans-serif; font-size:.85rem;}
+
+.lb-panel{background:var(--card); border-radius:16px; padding:14px 16px; box-shadow:0 2px 0 var(--line); margin-bottom:14px;}
+.lb-title{font-size:.75rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px;}
+.lb-row{display:flex; align-items:center; gap:10px; padding:7px 0;}
+.lb-rank{font-family:'Baloo 2',cursive; font-weight:800; width:22px; text-align:center; color:var(--ink-soft);}
+.lb-name{font-weight:700; flex-shrink:0; width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.lb-bar-track{flex:1; height:8px; background:var(--bg); border-radius:5px; overflow:hidden;}
+.lb-bar-fill{height:100%; border-radius:5px;}
+.lb-score{font-weight:800; width:42px; text-align:right; font-size:.85rem;}
+.lb-finished{font-size:.85rem;}
+
+.mp-qsettings{background:var(--card); border-radius:16px; padding:14px 16px; box-shadow:0 2px 0 var(--line); margin-bottom:16px;}
+.mp-qsettings-label{font-size:.75rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px;}
+.qcountbtns{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+.qcbtn{border:2px solid var(--line); background:var(--bg); color:var(--ink-soft); font-family:'Baloo 2',cursive; font-weight:700; font-size:.92rem; padding:8px 14px; border-radius:12px; cursor:pointer;}
+.qcbtn.active{border-color:var(--c1); background:var(--c1-soft); color:var(--c1);}
+.qcbtn:disabled{opacity:.4; cursor:not-allowed;}
+.rerollbtn{width:100%; background:var(--c5-soft); color:#0b7ba8; border:none; padding:11px; border-radius:12px; font-family:'Quicksand',sans-serif; font-weight:700; font-size:.88rem; cursor:pointer;}
+.rerollbtn:disabled{opacity:.5; cursor:not-allowed;}
+.qcount-readonly{font-size:.85rem; color:var(--ink-soft); font-weight:600;}
+
+.mp-toprow{display:flex; gap:8px; margin-bottom:16px;}
+.micbtn{flex:1; background:var(--c2-soft); color:var(--c2); border:none; padding:12px 10px; border-radius:14px; font-family:'Quicksand',sans-serif; font-weight:700; font-size:.88rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;}
+.micbtn.mic-active{background:var(--red); color:#fff; box-shadow:0 3px 0 #a12e42; animation:micpulse 1.6s ease-in-out infinite;}
+@keyframes micpulse{0%,100%{opacity:1;} 50%{opacity:.75;}}
+.player-mic{font-size:.85rem; margin-left:-2px;}
+/* ---- hiệu ứng "đang nói" kiểu Google Meet + trạng thái kết nối mic ---- */
+.player-row, .lb-row{transition:box-shadow .15s, background .15s; border-radius:12px;}
+.player-row.speaking{box-shadow:0 0 0 2px var(--green); background:var(--green-soft);}
+.lb-row.speaking{box-shadow:0 0 0 2px var(--green) inset; background:var(--green-soft);}
+.final-rank-row.speaking{box-shadow:0 0 0 2px var(--green) inset;}
+.player-dot{transition:box-shadow .15s, background .15s;}
+.player-row.speaking .player-dot{background:var(--green); box-shadow:0 0 0 4px var(--green-soft); animation:speakpulse 1s ease-in-out infinite;}
+@keyframes speakpulse{0%,100%{box-shadow:0 0 0 3px var(--green-soft);} 50%{box-shadow:0 0 0 7px var(--green-soft);}}
+.callstate{font-size:.78rem; margin-left:4px;}
+.callstate.reconnecting{color:var(--c4); animation:micpulse 1.2s ease-in-out infinite;}
+.callstate.failed{color:var(--red);}
+
+.final-rank{margin:18px 0; text-align:left;}
+.final-rank-title{font-size:.75rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; margin-bottom:10px; text-align:center;}
+.final-rank-row{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:var(--bg); margin-bottom:7px;}
+.final-rank-row.me{background:var(--c1-soft);}
+.final-rank-medal{font-size:1.1rem; width:26px; text-align:center; flex-shrink:0;}
+.final-rank-name{font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.final-rank-score{font-family:'Baloo 2',cursive; font-weight:800; color:var(--c1);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="examhead">
+    <div class="top-row">
+      <div>
+        <h1>🎮 Đấu trường từ vựng TRS6</h1>
+        <div class="code">Chương 1–2 đã mở · 80/150 từ · Trình độ B2</div>
+      </div>
+      <div class="stampbox">🔥 ÔN THI</div>
+    </div>
+    <div class="scorebar">
+      <div>Đã làm <b id="doneCount">0</b>/<span id="totalCount">–</span></div>
+      <div>✅ <b id="correctCount">0</b></div>
+      <div>❌ <b id="wrongCount">0</b></div>
+    </div>
+  </div>
+
+  <div class="modetabs">
+    <div class="modetab active" id="tabStudy">📇 Học từ vựng</div>
+    <div class="modetab" id="tabQuiz">🎯 Thi solo<div class="locktip" id="lockTip">🔒 Đang thi — hoàn thành bài trước đã!</div></div>
+    <div class="modetab" id="tabMulti">🤼 Đấu bạn bè</div>
+  </div>
+
+  <div class="studywrap show" id="studyWrap">
+    <div id="chapterPicker"></div>
+    <div id="flashSection" style="display:none;">
+      <div class="studyintro">Lướt từng thẻ để nắm nghĩa + mẹo nhớ trước khi thi thử. Một khi đã bấm "Bắt đầu bài kiểm tra", bạn sẽ không thể quay lại xem thẻ này cho đến khi nộp bài — giống thi thật! 🚀</div>
+      <button class="navbtn" id="backToChapters" style="margin-bottom:14px;">← Danh sách chương</button>
+      <div class="flashcard" id="flashcard"></div>
+      <div class="flashnav">
+        <button class="navbtn" id="flashPrev">← Trước</button>
+        <span class="flashcount" id="flashCount">1 / 40</span>
+        <button class="navbtn" id="flashNext">Tiếp →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quizWrap" style="display:none;">
+    <div id="startScreen"></div>
+    <div id="testScreen" style="display:none;">
+      <div class="navlegend">
+        <span><i class="dot" style="background:var(--bg);border:1.5px solid var(--line)"></i>Chưa làm</span>
+        <span><i class="dot" style="background:var(--green)"></i>Đúng</span>
+        <span><i class="dot" style="background:var(--red)"></i>Sai</span>
+      </div>
+      <div class="navgrid" id="navGrid"></div>
+      <div id="quizArea"></div>
+    </div>
+  </div>
+
+  <div id="multiWrap" style="display:none;">
+    <div id="mpHome"></div>
+    <div id="mpLobby" style="display:none;"></div>
+    <div id="mpBattle" style="display:none;">
+      <div class="lb-panel" id="lbPanel"></div>
+      <div id="mpQuizArea"></div>
+    </div>
+  </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+const PALETTE = ['#FF5D73','#17A398','#7C5CFC','#FFB627','#2EC4F1'];
+const CHAPTER1_WORDS = 
+[
+{w:"tactical loss",s:"In the negotiation, the team deliberately accepted a ___ , giving up a minor point early on in order to secure a much bigger concession later.",opts:["tactical loss", "downfall", "discipline", "allegiance"],correct:0,exp:"tactical loss (n) = thua có chiến lược — chủ động chấp nhận thua một điểm nhỏ để đạt lợi ích lớn hơn về sau. Từ khóa 'deliberately... in order to secure a bigger concession' cho thấy đây là một nước đi có tính toán, không phải thất bại thật sự. 'downfall' (sự sụp đổ) và 'allegiance' (lòng trung thành) không liên quan đến đàm phán; 'discipline' (kỷ luật) sai nghĩa hoàn toàn.",emoji:"🎯♟️",tip:"Thua mà không phải thua thật — như nhường một nước cờ nhỏ để thắng cả ván!",trans:"Trong cuộc đàm phán, đội ngũ đã chủ động chấp nhận một bước thua có tính toán, từ bỏ một điểm nhỏ ngay từ đầu để giành được một nhượng bộ lớn hơn nhiều về sau."},
+{w:"strategic",s:"The company made a ___ decision to enter the Asian market a full year before any of its competitors did.",opts:["strategic", "generic", "robust", "counterintuitive"],correct:0,exp:"strategic (adj) = có tính chiến lược, được tính toán kỹ để đạt lợi thế lâu dài. 'a year before competitors' cho thấy đây là bước đi khôn ngoan, mang tính chiến lược. 'generic' (chung chung) và 'robust' (mạnh mẽ, vững chắc) không hợp nghĩa; 'counterintuitive' (phản trực giác) chỉ dùng khi điều gì đó đi ngược với suy nghĩ thông thường.",emoji:"🧭",tip:"Nghĩ tới từ gốc 'strategy' (chiến lược) là ra ngay nghĩa của tính từ này.",trans:"Công ty đã đưa ra một quyết định mang tính chiến lược để thâm nhập thị trường châu Á trước các đối thủ cạnh tranh trọn một năm."},
+{w:"the vast number of",s:"___ students at this university come from outside the country, making the campus feel remarkably international.",opts:["The vast number of", "The equivalent of", "The downfall of", "The sphere of"],correct:0,exp:"the vast number of = số lượng lớn (của). Vế sau 'making the campus feel... international' cho thấy cần một cụm diễn tả số lượng lớn sinh viên. 'the equivalent of' (tương đương với) dùng để so sánh, không diễn tả số lượng; 'the downfall of' (sự sụp đổ) và 'the sphere of' (lĩnh vực) đều sai nghĩa trong ngữ cảnh này.",emoji:"👥🌊",tip:"'Vast' = mênh mông, rộng lớn → cả một biển người, số lượng khổng lồ.",trans:"Số lượng lớn sinh viên của trường đại học này đến từ nước ngoài, khiến khuôn viên trường mang không khí quốc tế rõ rệt."},
+{w:"resource allocation",s:"Poor ___ meant that the marketing department had far more funding than it needed while research was left with almost nothing.",opts:["resource allocation", "reinforcement", "discipline", "diplomatic status"],correct:0,exp:"resource allocation (n) = sự phân bổ tài nguyên. Câu nói về việc phân chia ngân sách không đều giữa các phòng ban — đúng là vấn đề phân bổ tài nguyên. 'reinforcement' (sự củng cố), 'discipline' (kỷ luật) và 'diplomatic status' (tình trạng ngoại giao) đều không liên quan đến việc chia ngân sách.",emoji:"📊🧩",tip:"Giống như chia bánh cho từng phòng ban — allocation = 'chia phần' tài nguyên.",trans:"Việc phân bổ tài nguyên kém khiến bộ phận marketing có nhiều kinh phí hơn mức cần thiết, trong khi bộ phận nghiên cứu gần như không có gì."},
+{w:"eventual",s:"Despite several early setbacks, the team's ___ victory in the championship made all the months of hard work worthwhile.",opts:["eventual", "generic", "fluid", "robust"],correct:0,exp:"eventual (adj) = cuối cùng, sau cùng (sau một quá trình). 'Despite early setbacks... victory' cho thấy chiến thắng đến sau cùng, sau khó khăn ban đầu. 'fluid' (linh hoạt, dễ đổi) và 'robust' (mạnh mẽ) không diễn tả trình tự thời gian; 'generic' (chung chung) không hợp nghĩa.",emoji:"🏁",tip:"Event (sự kiện) + ual → điều xảy ra ở cuối cùng của cả chuỗi sự kiện.",trans:"Bất chấp vài trở ngại ban đầu, chiến thắng cuối cùng của đội ở giải vô địch đã khiến bao tháng ngày nỗ lực trở nên xứng đáng."},
+{w:"sphere",s:"Renewable energy has become a major ___ of investment for governments looking to reduce carbon emissions.",opts:["sphere", "discipline", "equivalent", "antiquity"],correct:0,exp:"sphere (n) ở đây mang nghĩa 'lĩnh vực hoạt động' (nghĩa bóng của 'quả cầu'). 'a major sphere of investment' = một lĩnh vực đầu tư lớn. 'discipline' (kỷ luật/ngành học) gần nghĩa nhưng thường chỉ ngành học thuật, không tự nhiên đi với 'of investment'; 'equivalent' và 'antiquity' sai nghĩa hoàn toàn.",emoji:"🌐",tip:"Tưởng tượng quả địa cầu — mỗi 'khu vực' xoay trên đó chính là một sphere hoạt động.",trans:"Năng lượng tái tạo đã trở thành một lĩnh vực đầu tư lớn đối với các chính phủ đang tìm cách giảm phát thải carbon."},
+{w:"self-identity",s:"Living abroad for several years helped her develop a much stronger sense of ___ , separate from her family's expectations.",opts:["self-identity", "allegiance", "patriotism", "nationalistic pride"],correct:0,exp:"self-identity (n) = ý thức về bản thân, bản sắc cá nhân. Câu nói về việc hiểu rõ bản thân mình hơn, tách khỏi kỳ vọng gia đình — đúng là self-identity, không liên quan đến quốc gia. 'allegiance' (lòng trung thành), 'patriotism' (lòng yêu nước), 'nationalistic pride' (lòng tự hào dân tộc) đều thuộc phạm trù quốc gia/tổ chức, sai ngữ cảnh cá nhân ở đây.",emoji:"🪞",tip:"Self (bản thân) + identity (danh tính) = nhìn vào gương và biết mình thực sự là ai.",trans:"Sống ở nước ngoài nhiều năm đã giúp cô ấy phát triển một ý thức mạnh mẽ hơn về bản sắc cá nhân, tách biệt khỏi những kỳ vọng của gia đình."},
+{w:"correspond to",s:"The sharp rise in average temperatures over the past century seems to ___ the increase in industrial carbon emissions.",opts:["correspond to", "cede", "curb", "tackle"],correct:0,exp:"correspond to (v) = tương ứng với. Câu so sánh hai xu hướng cùng tăng — nhiệt độ và khí thải — nên cần động từ chỉ sự tương ứng. 'cede' (nhượng lại), 'curb' (kiềm chế) và 'tackle' (giải quyết) đều là động từ hành động, không diễn tả mối quan hệ tương ứng giữa hai hiện tượng.",emoji:"🔗✉️",tip:"Correspond còn có nghĩa 'viết thư qua lại' — hai thứ luôn 'khớp lời' với nhau.",trans:"Sự gia tăng mạnh mẽ của nhiệt độ trung bình trong thế kỷ qua dường như tương ứng với sự gia tăng khí thải carbon công nghiệp."},
+{w:"episodic",s:"The documentary uses an ___ structure, jumping back and forth between different periods of the artist's life rather than telling the story in order.",opts:["episodic", "generic", "robust", "counterintuitive"],correct:0,exp:"episodic (adj) = chia thành từng đoạn/hồi, không liên tục. 'jumping back and forth between different periods' mô tả chính xác cấu trúc rời rạc theo từng đoạn. 'generic' (chung chung), 'robust' (vững chắc) và 'counterintuitive' (phản trực giác) không liên quan đến cách kể chuyện.",emoji:"📺",tip:"Episode = một tập phim → episodic là kể chuyện rời rạc theo từng tập.",trans:"Bộ phim tài liệu sử dụng cấu trúc rời rạc theo từng đoạn, nhảy qua lại giữa các giai đoạn khác nhau trong cuộc đời của nghệ sĩ thay vì kể chuyện theo trình tự."},
+{w:"generic",s:"The advice given in the brochure was far too ___ to be of any real use to a business as specialised as ours.",opts:["generic", "episodic", "fluid", "indisputable"],correct:0,exp:"generic (adj) = chung chung, không cụ thể. Câu tương phản 'too generic' với 'a business as specialised as ours' — lời khuyên chung chung không hữu ích cho một doanh nghiệp đặc thù. 'episodic' (rời rạc theo đoạn), 'fluid' (linh hoạt) và 'indisputable' (không thể chối cãi) đều sai nghĩa ở đây.",emoji:"📦",tip:"Như một chiếc hộp không nhãn hiệu — dùng cho ai cũng được, chẳng có gì đặc sắc.",trans:"Lời khuyên trong tờ rơi quá chung chung để có thể thực sự hữu ích cho một doanh nghiệp đặc thù như của chúng tôi."},
+{w:"life-threatening events",s:"Emergency room surgeons are trained to remain calm even in the middle of ___ .",opts:["life-threatening events", "tactical losses", "diplomatic status", "downfalls"],correct:0,exp:"life-threatening events (n) = những sự kiện đe dọa đến tính mạng. Ngữ cảnh phòng cấp cứu, bác sĩ phẫu thuật rõ ràng liên quan đến các tình huống nguy hiểm đến tính mạng. Ba đáp án còn lại (thua chiến lược, tình trạng ngoại giao, sự sụp đổ) hoàn toàn không liên quan đến bệnh viện.",emoji:"🚨❤️‍🩹",tip:"Life (mạng sống) + threatening (đe dọa) → nguy hiểm đến mức có thể mất mạng.",trans:"Các bác sĩ phẫu thuật ở phòng cấp cứu được đào tạo để giữ bình tĩnh ngay cả giữa những tình huống đe dọa đến tính mạng."},
+{w:"fluid",s:"Social attitudes toward marriage and family have become far more ___ than they were a generation ago.",opts:["fluid", "robust", "critical", "indisputable"],correct:0,exp:"fluid (adj) = linh hoạt, dễ thay đổi (nghĩa bóng, không phải 'chất lỏng'). Câu nói thái độ xã hội ngày càng dễ thay đổi hơn so với trước — đúng nghĩa fluid. 'robust' (vững chắc) trái nghĩa hoàn toàn; 'critical' (quan trọng) và 'indisputable' (không thể chối cãi) không hợp ngữ cảnh.",emoji:"🌊",tip:"Như dòng nước chảy — dễ đổi hình dạng, dễ 'đổi ý', không cứng nhắc.",trans:"Thái độ xã hội đối với hôn nhân và gia đình đã trở nên linh hoạt hơn nhiều so với một thế hệ trước."},
+{w:"patriotism",s:"The annual parade was organised to celebrate ___ and to bring the whole community together as one nation.",opts:["patriotism", "allegiance", "discipline", "antiquity"],correct:0,exp:"patriotism (n) = lòng yêu nước nói chung. Cần phân biệt với 'allegiance' (n) = lòng trung thành, thường dành riêng cho một người/tổ chức/lá cờ cụ thể ('swear allegiance to'), trong khi patriotism là tình cảm chung với đất nước — hợp với 'celebrate... as one nation'. 'discipline' và 'antiquity' sai nghĩa hoàn toàn.",emoji:"🎖️",tip:"Patriot = người yêu nước → patriotism là cả một tình yêu dành cho Tổ quốc.",trans:"Cuộc diễu hành thường niên được tổ chức để tôn vinh lòng yêu nước và gắn kết cả cộng đồng lại thành một quốc gia."},
+{w:"engage in",s:"Employees at the company are actively encouraged to ___ voluntary work within their local communities.",opts:["engage in", "cede", "curb", "tackle"],correct:0,exp:"engage in (v) = tham gia vào (một hoạt động). 'encouraged to ___ voluntary work' cần động từ mang nghĩa tham gia. 'cede' (nhượng lại), 'curb' (kiềm chế) và 'tackle' (giải quyết) không đi tự nhiên với 'voluntary work' theo nghĩa 'tham gia'.",emoji:"🙋‍♀️",tip:"Engage = 'gắn kết vào' → engage in nghĩa là xắn tay áo tham gia thật sự.",trans:"Nhân viên trong công ty được tích cực khuyến khích tham gia vào các hoạt động tình nguyện trong cộng đồng địa phương của họ."},
+{w:"nationalistic pride",s:"The unexpected Olympic gold medal triggered a wave of ___ across the entire country.",opts:["nationalistic pride", "self-identity", "diplomatic status", "antiquity"],correct:0,exp:"nationalistic pride (n) = lòng tự hào dân tộc. Chiến thắng Olympic khiến cả nước tự hào — đúng nghĩa. Khác với 'self-identity' (bản sắc cá nhân, không phải cấp quốc gia); 'diplomatic status' và 'antiquity' hoàn toàn lạc đề.",emoji:"🏅",tip:"Nation (quốc gia) + pride (niềm tự hào) → niềm tự hào cả một dân tộc cùng chung.",trans:"Tấm huy chương vàng Olympic bất ngờ đã khơi dậy một làn sóng tự hào dân tộc trên khắp cả nước."},
+{w:"foster",s:"Good teachers try to ___ curiosity in their students rather than simply testing their ability to memorise facts.",opts:["foster", "curb", "cede", "resuscitate"],correct:0,exp:"foster (v) = nuôi dưỡng, bồi dưỡng (một phẩm chất tốt). 'foster curiosity' = nuôi dưỡng sự tò mò, đối lập với 'testing memorisation'. 'curb' (kiềm chế) mang nghĩa ngược lại; 'cede' (nhượng lại) và 'resuscitate' (làm sống lại, thường dùng cho người/vật đã 'chết') không hợp.",emoji:"🌱",tip:"Foster care = nuôi dưỡng trẻ em → nghĩa gốc là chăm bẵm cho một thứ lớn lên.",trans:"Những giáo viên giỏi cố gắng nuôi dưỡng sự tò mò ở học sinh thay vì chỉ đơn thuần kiểm tra khả năng ghi nhớ kiến thức của các em."},
+{w:"reinforcement",s:"Positive ___ , such as praise and small rewards, tends to work far better with children than punishment does.",opts:["reinforcement", "discipline", "downfall", "equivalent"],correct:0,exp:"reinforcement (n) = sự củng cố (hành vi tốt qua khen thưởng). 'positive reinforcement' là thuật ngữ tâm lý học quen thuộc, đối lập với 'punishment' trong câu. 'discipline' (kỷ luật) là biện pháp khác, không phải 'sự củng cố tích cực'; 'downfall' và 'equivalent' sai nghĩa.",emoji:"💪🧱",tip:"Re (lại) + force (sức mạnh) → làm cho vững chắc, mạnh thêm.",trans:"Sự củng cố tích cực, chẳng hạn như lời khen và những phần thưởng nhỏ, thường hiệu quả hơn nhiều với trẻ em so với hình phạt."},
+{w:"diplomatic status",s:"The ambassador's vehicle could not be searched at the border because of her ___ .",opts:["diplomatic status", "self-identity", "allegiance", "antiquity"],correct:0,exp:"diplomatic status (n) = tình trạng/quy chế ngoại giao — quyền miễn trừ dành cho các nhà ngoại giao. Việc xe của đại sứ không bị khám xét chính là nhờ quy chế này. Ba đáp án còn lại đều không liên quan đến ngoại giao.",emoji:"🛂",tip:"Diplomat = nhà ngoại giao → có 'tấm thẻ vàng' đặc quyền không ai được đụng tới.",trans:"Xe của đại sứ không thể bị khám xét ở biên giới vì quy chế ngoại giao của bà."},
+{w:"indisputable",s:"The scientific evidence for climate change is now considered ___ by the overwhelming majority of researchers.",opts:["indisputable", "generic", "episodic", "counterintuitive"],correct:0,exp:"indisputable (adj) = không thể chối cãi, chắc chắn đúng. 'considered ___ by the overwhelming majority' cần một tính từ chỉ sự chắc chắn tuyệt đối. 'generic' (chung chung), 'episodic' (rời rạc) và 'counterintuitive' (phản trực giác) đều không phù hợp với ý 'bằng chứng khoa học vững chắc'.",emoji:"⚖️✅",tip:"In (không) + dispute (tranh cãi) → chân lý không ai có thể cãi lại được.",trans:"Bằng chứng khoa học về biến đổi khí hậu hiện nay được đại đa số các nhà nghiên cứu coi là không thể chối cãi."},
+{w:"antiquity",s:"Many of the philosophical ideas that shape modern thinking actually date back to ___ .",opts:["antiquity", "downfall", "sphere", "equivalent"],correct:0,exp:"antiquity (n) = thời cổ đại. 'date back to ___' cần một danh từ chỉ một thời kỳ trong quá khứ xa xưa. Ba đáp án còn lại (sự sụp đổ, lĩnh vực, sự tương đương) không diễn tả một mốc thời gian.",emoji:"🏛️",tip:"Antique = đồ cổ → antiquity là cả một thời đại cổ xưa, không phải một món đồ.",trans:"Nhiều tư tưởng triết học định hình cách suy nghĩ hiện đại thực chất có từ thời cổ đại."},
+{w:"downfall",s:"A series of corruption scandals eventually led to the ___ of the country's ruling government.",opts:["downfall", "reinforcement", "allegiance", "antiquity"],correct:0,exp:"downfall (n) = sự sụp đổ (của quyền lực, chính phủ, danh tiếng...). 'corruption scandals... led to the ___ of the government' — bê bối dẫn đến sự sụp đổ. Ba từ còn lại (sự củng cố, lòng trung thành, thời cổ đại) không hợp nghĩa nhân quả trong câu.",emoji:"📉",tip:"Down (xuống) + fall (rơi) → rơi tự do từ đỉnh cao xuống vực — hình ảnh rất trực quan.",trans:"Một loạt các vụ bê bối tham nhũng cuối cùng đã dẫn đến sự sụp đổ của chính phủ cầm quyền của đất nước này."},
+{w:"cede",s:"After years of costly conflict, the smaller nation was ultimately forced to ___ part of its territory to its neighbour.",opts:["cede", "foster", "tackle", "resuscitate"],correct:0,exp:"cede (v) = từ bỏ, nhượng lại (thường là đất đai, quyền lợi). 'forced to ___ part of its territory' là ví dụ kinh điển của 'cede'. 'foster' (nuôi dưỡng), 'tackle' (giải quyết) và 'resuscitate' (hồi sinh) đều không hợp nghĩa nhượng lại lãnh thổ.",emoji:"🏳️🤲",tip:"Nghe hơi giống 'seed' nhưng nghĩa lại là buông tay, nhường lại thứ mình đang nắm giữ.",trans:"Sau nhiều năm xung đột tốn kém, quốc gia nhỏ hơn cuối cùng đã buộc phải nhượng lại một phần lãnh thổ của mình cho nước láng giềng."},
+{w:"scarcely",s:"She had ___ finished her opening sentence when the audience burst into applause.",opts:["scarcely", "predominantly", "wrongheadedly", "eventual"],correct:0,exp:"scarcely (adv) = hầu như không, vừa mới. Cấu trúc 'had scarcely + V-ed... when...' = vừa mới làm gì đó thì việc khác xảy ra ngay. 'predominantly' (chủ yếu) và 'wrongheadedly' (một cách sai lầm) không hợp nghĩa thời gian; 'eventual' là tính từ, không thể đứng sau 'had'.",emoji:"⏱️",tip:"Scarce = khan hiếm → scarcely nghĩa là gần như không có, vừa mới vừa đủ.",trans:"Cô vừa mới kết thúc câu mở đầu thì khán giả đã vỡ òa trong tràng pháo tay."},
+{w:"make perfect sense",s:"Once she calmly explained her reasoning step by step, the decision began to ___ .",opts:["make perfect sense", "cede", "curb", "foster"],correct:0,exp:"make (perfect) sense = hoàn toàn hợp lý, dễ hiểu. 'Once explained... began to ___' cần cụm diễn tả 'trở nên hợp lý'. 'cede' (nhượng lại), 'curb' (kiềm chế) và 'foster' (nuôi dưỡng) đều là động từ hành động khác nghĩa, không diễn tả sự dễ hiểu.",emoji:"💡",tip:"Giống như bóng đèn bật sáng trong đầu — 'à, hợp lý ghê!'",trans:"Sau khi cô ấy bình tĩnh giải thích lý lẽ của mình từng bước một, quyết định đó bắt đầu trở nên hoàn toàn hợp lý."},
+{w:"equivalent",s:"One kilometre is roughly the ___ of 0.62 miles.",opts:["equivalent", "sphere", "downfall", "antiquity"],correct:0,exp:"equivalent (n) = sự tương đương. 'the equivalent of X' = tương đương với X — cấu trúc quen thuộc khi so sánh đơn vị đo lường. Ba đáp án còn lại không mang nghĩa 'tương đương'.",emoji:"⚖️",tip:"Equal (bằng) ẩn trong từ → có giá trị ngang bằng, thay thế được cho nhau.",trans:"Một kilômét xấp xỉ tương đương với 0,62 dặm."},
+{w:"curb",s:"The government introduced a new fuel tax specifically designed to ___ excessive car use in the city centre.",opts:["curb", "foster", "cede", "resuscitate"],correct:0,exp:"curb (v) = kiềm chế, hạn chế (một hành vi không mong muốn). Thuế nhiên liệu được dùng để hạn chế việc dùng xe quá mức — đúng nghĩa curb. 'foster' (nuôi dưỡng) mang nghĩa ngược; 'cede' và 'resuscitate' không hợp ngữ cảnh giao thông.",emoji:"🚦",tip:"Như vỉa hè chặn bánh xe lại — curb nghĩa là chặn bớt, kìm lại.",trans:"Chính phủ đã đưa ra một loại thuế nhiên liệu mới được thiết kế đặc biệt để kiềm chế việc sử dụng xe hơi quá mức ở trung tâm thành phố."},
+{w:"discipline",s:"Learning to play the violin well requires years of ___ and daily practice, even when motivation is low.",opts:["discipline", "reinforcement", "allegiance", "antiquity"],correct:0,exp:"discipline (n) = kỷ luật, sự tự giác rèn luyện. 'years of ___ and daily practice' cần danh từ chỉ tính kỷ luật, tự giác. Ba đáp án còn lại (sự củng cố, lòng trung thành, thời cổ đại) không liên quan đến việc luyện tập nhạc cụ.",emoji:"🎯📅",tip:"Không chỉ là 'bị phạt' mà còn là tự giác luyện tập đều đặn mỗi ngày.",trans:"Học chơi violin giỏi đòi hỏi nhiều năm kỷ luật và luyện tập hằng ngày, ngay cả khi động lực xuống thấp."},
+{w:"predominantly",s:"The population of the small island is ___ made up of fishermen and their families.",opts:["predominantly", "scarcely", "wrongheadedly", "eventual"],correct:0,exp:"predominantly (adv) = phần lớn, chủ yếu. 'is ___ made up of fishermen' = chủ yếu bao gồm ngư dân. 'scarcely' (hầu như không) mang nghĩa gần như đối lập; 'wrongheadedly' (sai lầm) và 'eventual' (tính từ, sai vị trí ngữ pháp) đều không phù hợp.",emoji:"📊",tip:"Pre + dominant (chiếm ưu thế) → chiếm phần áp đảo trong tổng thể.",trans:"Dân số của hòn đảo nhỏ này chủ yếu là ngư dân và gia đình họ."},
+{w:"resuscitate",s:"Paramedics worked for several tense minutes trying to ___ the patient after his heart suddenly stopped.",opts:["resuscitate", "cede", "curb", "foster"],correct:0,exp:"resuscitate (v) = hồi sức, làm sống lại (dùng cho người ngừng tim/ngừng thở). Đây là thuật ngữ y khoa gắn liền với cấp cứu tim ngừng đập. 'cede' (nhượng lại), 'curb' (kiềm chế) và 'foster' (nuôi dưỡng) đều sai hoàn toàn trong ngữ cảnh y tế khẩn cấp.",emoji:"❤️‍🩹",tip:"Một từ dài nhưng chỉ dùng trong đúng một tình huống: hồi sinh một trái tim vừa ngừng đập.",trans:"Các nhân viên cấp cứu đã làm việc trong nhiều phút căng thẳng để cố gắng hồi sức cho bệnh nhân sau khi tim anh ta đột ngột ngừng đập."},
+{w:"allegiance",s:"New soldiers are required to formally swear ___ to their country before officially joining the army.",opts:["allegiance", "patriotism", "discipline", "reinforcement"],correct:0,exp:"allegiance (n) = lòng trung thành (thường đi với động từ 'swear allegiance to' — thề trung thành với). Đây là cụm cố định trong nghi lễ quân đội. 'patriotism' (lòng yêu nước) không đi với 'swear'; 'discipline' và 'reinforcement' sai nghĩa.",emoji:"🤝🎖️",tip:"Hay đi cùng cụm 'swear allegiance' (thề trung thành) — như một lời thề danh dự.",trans:"Những người lính mới được yêu cầu chính thức tuyên thệ trung thành với đất nước trước khi chính thức gia nhập quân đội."},
+{w:"critical",s:"Access to clean water is absolutely ___ to preventing the spread of disease in refugee camps.",opts:["critical", "fluid", "indisputable", "robust"],correct:0,exp:"critical (adj) ở đây mang nghĩa 'rất quan trọng, thiết yếu' (không phải nghĩa 'chỉ trích'). 'critical to + V-ing' = thiết yếu để làm gì. 'fluid' (linh hoạt), 'indisputable' (không thể chối cãi) và 'robust' (mạnh mẽ) đều không hợp nghĩa 'thiết yếu'.",emoji:"🚑",tip:"Không phải 'chỉ trích' mà là 'sống còn, tối quan trọng' trong ngữ cảnh này!",trans:"Việc tiếp cận nước sạch là điều tuyệt đối thiết yếu để ngăn ngừa sự lây lan của bệnh tật trong các trại tị nạn."},
+{w:"protectionist legislations",s:"Facing pressure from local manufacturers, the government passed several ___ intended to limit the flow of cheap foreign imports.",opts:["protectionist legislations", "restrictive tariffs", "free trade", "resource allocation"],correct:0,exp:"protectionist legislations (n) = các đạo luật/chính sách bảo hộ nói chung, thường bao gồm nhiều biện pháp (thuế, hạn ngạch...). Trong câu này, chủ ngữ là 'the government passed' — hành động 'ban hành luật', nên hợp với 'legislations' (luật) hơn là 'restrictive tariff' (chỉ một loại thuế cụ thể, không 'passed' như luật). 'free trade' (thương mại tự do) trái nghĩa hoàn toàn.",emoji:"🛡️📜",tip:"Protect (bảo vệ) + legislation (luật) → cả một hệ thống luật để che chắn.",trans:"Trước áp lực từ các nhà sản xuất trong nước, chính phủ đã ban hành một số đạo luật bảo hộ nhằm hạn chế dòng hàng nhập khẩu giá rẻ từ nước ngoài."},
+{w:"free trade",s:"Supporters of ___ argue that removing barriers between countries ultimately benefits consumers through lower prices.",opts:["free trade", "protectionist legislations", "restrictive tariff", "resource allocation"],correct:0,exp:"free trade (n) = thương mại tự do — chính sách xóa bỏ rào cản thương mại. Câu nói về việc 'removing barriers between countries', đúng là ủng hộ tự do thương mại. 'protectionist legislations' và 'restrictive tariff' mang nghĩa ngược lại (hạn chế thương mại); 'resource allocation' không liên quan.",emoji:"🌍🤝",tip:"Free (tự do) + trade (thương mại) — có lẽ là cụm dễ đoán nghĩa nhất bài!",trans:"Những người ủng hộ thương mại tự do lập luận rằng việc xóa bỏ rào cản giữa các quốc gia cuối cùng sẽ mang lại lợi ích cho người tiêu dùng thông qua giá cả thấp hơn."},
+{w:"specialize in",s:"Over the past decade, this small law firm has come to ___ intellectual property disputes.",opts:["specialize in", "engage in", "tackle", "leverage"],correct:0,exp:"specialize in (v) = chuyên môn hóa về, tập trung chuyên sâu vào một lĩnh vực cụ thể. 'come to ___ intellectual property disputes' = trở nên chuyên về tranh chấp sở hữu trí tuệ. 'engage in' (tham gia vào) thiếu sắc thái 'chuyên sâu'; 'tackle' (giải quyết) và 'leverage' (tận dụng) không hợp nghĩa.",emoji:"🔬",tip:"Special (đặc biệt) ẩn trong từ → trở thành chuyên gia sâu về đúng một thứ.",trans:"Trong thập kỷ qua, công ty luật nhỏ này đã dần chuyên môn hóa về các tranh chấp sở hữu trí tuệ."},
+{w:"tackle",s:"The mayor's new policy aims to ___ youth unemployment head-on, rather than simply making small adjustments around the edges.",opts:["tackle", "cede", "curb", "resuscitate"],correct:0,exp:"tackle (v) = giải quyết trực diện một vấn đề khó. Cụm 'head-on' (trực diện) đi rất tự nhiên với 'tackle'. 'curb' (kiềm chế, giảm bớt) mang sắc thái nhẹ hơn, không phải 'giải quyết tận gốc'; 'cede' và 'resuscitate' sai nghĩa hoàn toàn.",emoji:"🥊",tip:"Như cầu thủ lao vào tranh bóng — đối mặt trực diện, không né tránh vấn đề.",trans:"Chính sách mới của thị trưởng nhằm giải quyết trực diện tình trạng thất nghiệp ở thanh niên, thay vì chỉ đơn thuần điều chỉnh nhỏ ở phần rìa vấn đề."},
+{w:"counterintuitive",s:"It might sound ___ , but research shows that doing slightly less exercise can sometimes lead to better long-term results.",opts:["counterintuitive", "generic", "episodic", "indisputable"],correct:0,exp:"counterintuitive (adj) = phản trực giác, đi ngược lại những gì người ta thường nghĩ là đúng. 'It might sound ___, but research shows...' là mẫu câu kinh điển giới thiệu một sự thật bất ngờ. 'indisputable' (không thể chối cãi) trái ngược hoàn toàn về sắc thái; 'generic' và 'episodic' không hợp nghĩa.",emoji:"🤯",tip:"Counter (ngược) + intuitive (trực giác) → sự thật đi ngược lại điều ta nghĩ là đúng.",trans:"Nghe có vẻ phản trực giác, nhưng nghiên cứu cho thấy việc tập luyện ít hơn một chút đôi khi có thể mang lại kết quả tốt hơn về lâu dài."},
+{w:"robust",s:"Engineers built the bridge with an unusually ___ steel frame, designed to withstand even severe earthquakes.",opts:["robust", "fluid", "critical", "generic"],correct:0,exp:"robust (adj) = mạnh mẽ, chắc chắn, khó bị phá vỡ. 'designed to withstand even severe earthquakes' cho thấy kết cấu rất vững chắc — đúng nghĩa robust. 'fluid' (linh hoạt, dễ thay đổi) trái ngược với 'chắc chắn'; 'critical' và 'generic' không hợp nghĩa kỹ thuật ở đây.",emoji:"🏋️",tip:"Nghĩ đến một lực sĩ vạm vỡ — chắc chắn, khó bị quật ngã.",trans:"Các kỹ sư đã xây dựng cây cầu với một khung thép chắc chắn khác thường, được thiết kế để chịu được cả những trận động đất nghiêm trọng."},
+{w:"leverage",s:"Small businesses with tight budgets can still ___ social media to reach thousands of potential customers for free.",opts:["leverage", "cede", "curb", "foster"],correct:0,exp:"leverage (v) = tận dụng (một nguồn lực sẵn có) để đạt lợi thế lớn hơn. 'leverage social media' = tận dụng mạng xã hội — cụm rất phổ biến trong kinh doanh. 'cede' (nhượng lại), 'curb' (kiềm chế) và 'foster' (nuôi dưỡng) đều không hợp nghĩa 'tận dụng nguồn lực'.",emoji:"⚙️",tip:"Lever = đòn bẩy → dùng một lực nhỏ để tạo ra kết quả lớn.",trans:"Các doanh nghiệp nhỏ với ngân sách eo hẹp vẫn có thể tận dụng mạng xã hội để tiếp cận hàng nghìn khách hàng tiềm năng miễn phí."},
+{w:"restrictive tariff",s:"The newly imposed ___ on imported steel immediately raised production costs for domestic car manufacturers.",opts:["restrictive tariff", "free trade", "protectionist legislations", "resource allocation"],correct:0,exp:"restrictive tariff (n) = thuế quan mang tính hạn chế — một loại thuế cụ thể đánh vào hàng nhập khẩu để hạn chế nhập khẩu. Câu nói cụ thể về 'thuế trên thép nhập khẩu' (a tariff on imported steel) — chính xác là restrictive tariff, cụ thể hơn 'protectionist legislations' (luật nói chung). 'free trade' trái nghĩa; 'resource allocation' không liên quan.",emoji:"💰🚧",tip:"Restrict (hạn chế) + tariff (thuế) → mức thuế dựng lên như một rào chắn.",trans:"Mức thuế quan hạn chế mới được áp đặt lên thép nhập khẩu đã ngay lập tức làm tăng chi phí sản xuất cho các nhà sản xuất ô tô trong nước."},
+{w:"wrongheadedly",s:"Critics argued that the company had ___ ignored repeated warnings from its own engineers before launching the faulty product.",opts:["wrongheadedly", "predominantly", "scarcely", "eventual"],correct:0,exp:"wrongheadedly (adv) = một cách sai lầm, ngoan cố dù biết là sai. '___ ignored repeated warnings' = ngoan cố phớt lờ những cảnh báo — đúng nghĩa. 'predominantly' (chủ yếu) và 'scarcely' (hầu như không) không hợp nghĩa; 'eventual' là tính từ nên sai vị trí ngữ pháp (không thể bổ nghĩa cho động từ).",emoji:"🙈",tip:"Wrong (sai) + headed (có đầu óc kiểu...) → cứng đầu làm điều sai dù biết rõ là sai.",trans:"Những người chỉ trích cho rằng công ty đã một cách ngoan cố phớt lờ những cảnh báo liên tục từ chính các kỹ sư của mình trước khi tung ra sản phẩm lỗi."}
+];
+
+const CHAPTER2_DATA = [
+{w:"go awry",s:"The product launch went completely ___ after a critical software bug was discovered just hours before the event.",opts:["go awry", "opt for", "rally", "incur"],correct:0,exp:"go awry (v) = trở nên tồi tệ, chệch hướng so với kế hoạch. Từ khóa 'a critical bug... just hours before' cho thấy kế hoạch bị hỏng đột ngột. 'opt for' (lựa chọn), 'rally' (tập hợp) và 'incur' (phát sinh chi phí) đều không diễn tả việc 'trở nên tồi tệ'.",emoji:"💥📉",tip:"Awry nghe hơi giống 'a wry (smile)' — nụ cười gượng gạo khi mọi thứ đi sai hướng!",trans:"Buổi ra mắt sản phẩm hoàn toàn chệch hướng sau khi một lỗi phần mềm nghiêm trọng được phát hiện chỉ vài giờ trước sự kiện."},
+{w:"opt for",s:"Rather than repairing the old machine, the factory decided to ___ a brand-new one.",opts:["opt for", "go awry", "rally", "incur"],correct:0,exp:"opt for (v) = lựa chọn, quyết định chọn một phương án. 'Rather than... decided to ___' cần động từ chỉ sự lựa chọn giữa hai phương án. 'go awry' (chệch hướng), 'rally' (tập hợp) và 'incur' (phát sinh) không hợp nghĩa lựa chọn.",emoji:"🤔✅",tip:"Option (lựa chọn) nằm ngay trong từ opt → dễ nhớ nhất bài!",trans:"Thay vì sửa chữa cỗ máy cũ, nhà máy đã quyết định chọn mua một cái hoàn toàn mới."},
+{w:"protectionist measure",s:"To defend local jobs, the government introduced several ___ , including quotas and higher tariffs on imported steel.",opts:["protectionist measures", "import quota", "financial prosperity", "market superiority"],correct:0,exp:"protectionist measure(s) (n) = biện pháp bảo hộ nói chung — một danh mục rộng bao gồm hạn ngạch, thuế... 'several ___, including quotas and tariffs' cho thấy đây là thuật ngữ bao quát hơn 'import quota' (chỉ là MỘT loại biện pháp cụ thể). 'financial prosperity' (thịnh vượng tài chính) và 'market superiority' (vị thế vượt trội) không liên quan.",emoji:"🛡️",tip:"Protect (bảo vệ) + measure (biện pháp) = biện pháp để bảo vệ ngành trong nước.",trans:"Để bảo vệ việc làm trong nước, chính phủ đã đưa ra một số biện pháp bảo hộ, bao gồm hạn ngạch và thuế cao hơn đối với thép nhập khẩu."},
+{w:"import quota",s:"Under the new ___ , the country could bring in no more than 500,000 tonnes of foreign rice per year.",opts:["import quota", "protectionist measure", "financial prosperity", "market superiority"],correct:0,exp:"import quota (n) = hạn ngạch nhập khẩu — giới hạn số lượng cụ thể được phép nhập khẩu. 'no more than 500,000 tonnes... per year' là một con số cụ thể, đặc trưng của quota. 'protectionist measure' là khái niệm rộng hơn, không nêu con số cụ thể; hai đáp án còn lại sai nghĩa.",emoji:"📦🔢",tip:"Quota = 'hạn mức' — nhớ đến con số giới hạn cụ thể, khác với biện pháp chung chung.",trans:"Theo hạn ngạch nhập khẩu mới, quốc gia này không được nhập khẩu quá 500.000 tấn gạo nước ngoài mỗi năm."},
+{w:"financial prosperity",s:"Decades of steady economic growth brought the small nation unprecedented ___ .",opts:["financial prosperity", "market superiority", "import quota", "retaliatory measures"],correct:0,exp:"financial prosperity (n) = sự thịnh vượng, giàu có về tài chính. 'decades of growth... unprecedented ___' cần danh từ chỉ sự giàu có, phát triển vượt bậc. 'market superiority' (vị thế vượt trội thị trường) hẹp hơn, chỉ về cạnh tranh; hai đáp án còn lại không liên quan.",emoji:"💰📈",tip:"Prosper = 'phát đạt' → prosperity là cả một giai đoạn ăn nên làm ra.",trans:"Nhiều thập kỷ tăng trưởng kinh tế ổn định đã mang lại cho quốc gia nhỏ bé này sự thịnh vượng tài chính chưa từng có."},
+{w:"market superiority",s:"Thanks to its cutting-edge technology, the company quickly established ___ over every one of its rivals.",opts:["market superiority", "financial prosperity", "import quota", "retaliatory measures"],correct:0,exp:"market superiority (n) = vị thế vượt trội trên thị trường so với đối thủ. 'established ___ over every rival' cần cụm chỉ vị thế dẫn đầu thị trường. 'financial prosperity' nói về sự giàu có nói chung, không riêng về vị thế cạnh tranh; hai đáp án còn lại sai nghĩa.",emoji:"🏆📊",tip:"Superior = 'vượt trội' → superiority chính là trạng thái đứng trên tất cả.",trans:"Nhờ công nghệ tiên tiến, công ty nhanh chóng thiết lập được vị thế vượt trội trên thị trường so với mọi đối thủ cạnh tranh."},
+{w:"retaliatory",s:"In response to the new tariffs, the country imposed its own ___ taxes on American goods.",opts:["retaliatory", "prospective", "analogous", "even-handed"],correct:0,exp:"retaliatory (adj) = mang tính trả đũa, đáp trả. 'In response to the new tariffs... its own ___ taxes' rõ ràng là hành động đáp trả. 'prospective' (tương lai), 'analogous' (tương tự) và 'even-handed' (công bằng) đều không mang nghĩa trả đũa.",emoji:"🔁⚔️",tip:"Retaliate = 'trả đũa' → retaliatory taxes là thuế ăn miếng trả miếng.",trans:"Để đáp trả mức thuế quan mới, quốc gia này đã áp đặt các loại thuế mang tính trả đũa của riêng mình lên hàng hóa Mỹ."},
+{w:"rally",s:"Facing the crisis, workers across the country began to ___ around a single set of demands.",opts:["rally", "incur", "opt for", "ward off"],correct:0,exp:"rally (v) = tập hợp lại, đoàn kết vì một mục đích chung. 'workers... began to ___ around a single set of demands' cần động từ chỉ sự tập hợp. 'incur' (phát sinh chi phí), 'opt for' (lựa chọn) và 'ward off' (đẩy lùi) không hợp nghĩa tập hợp.",emoji:"📣🤝",tip:"Nghĩ đến 'rally' trong thể thao — đám đông tụ tập cổ vũ cùng một đội.",trans:"Đối mặt với khủng hoảng, công nhân trên khắp cả nước bắt đầu tập hợp lại xung quanh một loạt yêu sách chung."},
+{w:"savvy",s:"A ___ investor always reads the fine print before signing any contract.",opts:["savvy", "prospective", "innumerable", "analogous"],correct:0,exp:"savvy (adj) = khôn ngoan, hiểu biết thực tế (thường về kinh doanh, công nghệ). 'always reads the fine print' mô tả một người thận trọng, khôn ngoan. 'prospective' (tương lai), 'innumerable' (vô số) và 'analogous' (tương tự) đều không hợp nghĩa.",emoji:"🧠💡",tip:"Savvy nghe gọn, sắc — hình dung một người 'lanh lợi', nhìn thấu mọi mánh khóe.",trans:"Một nhà đầu tư khôn ngoan luôn đọc kỹ các điều khoản nhỏ trước khi ký bất kỳ hợp đồng nào."},
+{w:"opportunity cost",s:"Choosing to open a bakery instead of taking that job offer had a real ___ — the steady salary she gave up.",opts:["opportunity cost", "financial prosperity", "market superiority", "retaliatory measure"],correct:0,exp:"opportunity cost (n) = chi phí cơ hội — giá trị của lựa chọn tốt nhất bị bỏ lỡ khi chọn phương án khác. 'the steady salary she gave up' chính là ví dụ điển hình của opportunity cost. Ba đáp án còn lại đều không mang nghĩa 'cái giá của sự đánh đổi'.",emoji:"⚖️🔀",tip:"Mỗi lựa chọn đều có một 'cơ hội' bị bỏ lại phía sau — đó chính là cái giá phải trả.",trans:"Việc chọn mở một tiệm bánh thay vì nhận công việc đó đã có một cái giá cơ hội thực sự — khoản lương ổn định mà cô ấy đã từ bỏ."},
+{w:"incur",s:"By paying her credit card bill late every month, she continued to ___ unnecessary interest charges.",opts:["incur", "rally", "opt for", "ward off"],correct:0,exp:"incur (v) = phát sinh, phải gánh chịu (thường là chi phí, hậu quả xấu). 'paying... late... ___ unnecessary interest charges' cần động từ chỉ việc gánh thêm chi phí. 'rally' (tập hợp), 'opt for' (lựa chọn) và 'ward off' (đẩy lùi) không hợp nghĩa.",emoji:"💳📈",tip:"Incur luôn đi kèm điều không mong muốn — như một hóa đơn 'tự nhiên' phát sinh.",trans:"Bằng việc thanh toán hóa đơn thẻ tín dụng trễ mỗi tháng, cô ấy tiếp tục phải gánh chịu những khoản phí lãi không cần thiết."},
+{w:"prospective",s:"The real estate agent sent detailed photos to every ___ buyer who had shown interest in the house.",opts:["prospective", "innumerable", "analogous", "ostensibly"],correct:0,exp:"prospective (adj) = tương lai, có khả năng trở thành (một vai trò nào đó). 'every ___ buyer who had shown interest' = người mua tiềm năng, chưa chính thức mua. 'innumerable' (vô số), 'analogous' (tương tự) và 'ostensibly' (trạng từ, sai từ loại) đều không hợp.",emoji:"🔮🏠",tip:"Pro (hướng tới) + spect (nhìn) → nhìn về phía trước, hướng tới tương lai.",trans:"Nhân viên môi giới bất động sản đã gửi ảnh chi tiết cho mọi người mua tiềm năng đã tỏ ra quan tâm đến ngôi nhà."},
+{w:"innumerable",s:"The old library contained ___ manuscripts, far too many for anyone to count.",opts:["innumerable", "prospective", "analogous", "retaliatory"],correct:0,exp:"innumerable (adj) = vô số, nhiều đến mức không đếm được. 'far too many for anyone to count' giải thích trực tiếp nghĩa của từ. 'prospective' (tương lai), 'analogous' (tương tự) và 'retaliatory' (trả đũa) đều không liên quan đến số lượng.",emoji:"🔢♾️",tip:"In (không) + numerable (đếm được) → không thể đếm nổi.",trans:"Thư viện cổ chứa vô số bản thảo, nhiều đến mức không ai có thể đếm xuể."},
+{w:"analogous",s:"The structure of an atom is often described as ___ to a miniature solar system, with electrons orbiting a nucleus.",opts:["analogous", "innumerable", "prospective", "even-handed"],correct:0,exp:"analogous (adj) = tương tự, có thể so sánh với (thường dùng khi giải thích một khái niệm phức tạp qua một hình ảnh quen thuộc). 'described as ___ to a miniature solar system' là một phép so sánh kinh điển. Ba đáp án còn lại không mang nghĩa 'tương tự'.",emoji:"🔄🪐",tip:"Analogy = 'phép so sánh, phép loại suy' → analogous nghĩa là 'giống như'.",trans:"Cấu trúc của nguyên tử thường được mô tả là tương tự như một hệ mặt trời thu nhỏ, với các electron quay quanh hạt nhân."},
+{w:"ostensibly",s:"The meeting was ___ about budget planning, but everyone knew the real topic would be the recent layoffs.",opts:["ostensibly", "even-handed", "savvy", "analogous"],correct:0,exp:"ostensibly (adv) = bề ngoài có vẻ là (nhưng thực chất khác). 'was ___ about X, but everyone knew the real topic would be Y' là cấu trúc kinh điển của từ này — cái vẻ bề ngoài khác với sự thật. 'even-handed' (công bằng), 'savvy' (khôn ngoan) và 'analogous' (tương tự) không hợp nghĩa.",emoji:"🎭",tip:"Ostensibly = như đang đeo một 'chiếc mặt nạ' che đi mục đích thật.",trans:"Cuộc họp bề ngoài có vẻ là về việc lập kế hoạch ngân sách, nhưng ai cũng biết chủ đề thực sự sẽ là đợt sa thải gần đây."},
+{w:"devolve into",s:"What began as a peaceful protest quickly ___ chaos when police arrived.",opts:["devolved into", "warded off", "rallied", "incurred"],correct:0,exp:"devolve into (v) = biến thành, suy thoái thành (một trạng thái tồi tệ hơn). 'What began as peaceful... quickly ___ chaos' cho thấy tình huống xấu đi nhanh chóng. 'ward off' (đẩy lùi), 'rally' (tập hợp) và 'incur' (phát sinh) không hợp nghĩa biến chuyển xấu đi.",emoji:"🌀⬇️",tip:"De (xuống) + volve (cuộn, xoay) → mọi thứ 'lăn dốc' xuống một trạng thái tệ hơn.",trans:"Những gì bắt đầu như một cuộc biểu tình ôn hòa nhanh chóng biến thành hỗn loạn khi cảnh sát đến."},
+{w:"hiccup",s:"The product launch went smoothly overall, aside from one small technical ___ that was quickly fixed.",opts:["hiccup", "epidemic", "symptom", "outbreak"],correct:0,exp:"hiccup (n) ở đây mang nghĩa bóng 'trục trặc nhỏ, tạm thời' (không phải nghĩa gốc 'nấc cụt'). 'one small technical ___ that was quickly fixed' mô tả một vấn đề nhỏ, không nghiêm trọng. 'epidemic' (dịch bệnh), 'symptom' (triệu chứng) và 'outbreak' (bùng phát dịch) đều thuộc chủ đề y tế, không hợp ngữ cảnh kỹ thuật này.",emoji:"😅🔧",tip:"Như một cái nấc cụt — chỉ là trục trặc nhỏ thoáng qua rồi hết ngay.",trans:"Buổi ra mắt sản phẩm nhìn chung diễn ra suôn sẻ, ngoại trừ một trục trặc kỹ thuật nhỏ đã được khắc phục nhanh chóng."},
+{w:"sanctions",s:"The United Nations imposed economic ___ on the country after it violated the peace agreement.",opts:["sanctions", "hiccups", "symptoms", "antigens"],correct:0,exp:"sanctions (n) = các biện pháp trừng phạt, chế tài (thường về kinh tế, ngoại giao) áp lên một quốc gia vi phạm. 'imposed economic ___ on the country after it violated...' là cách dùng rất phổ biến trong tin tức quốc tế. Ba đáp án còn lại đều sai chủ đề.",emoji:"🚫🌐",tip:"Sanctions nghe hơi giống 'sanction' (cho phép) nhưng ở số nhiều lại mang nghĩa hoàn toàn ngược — trừng phạt!",trans:"Liên Hợp Quốc đã áp đặt các biện pháp trừng phạt kinh tế lên quốc gia này sau khi nước này vi phạm thỏa thuận hòa bình."},
+{w:"enact",s:"Lawmakers voted to ___ a new bill requiring all restaurants to display calorie counts on their menus.",opts:["enact", "incur", "opt for", "rally"],correct:0,exp:"enact (v) = ban hành, thông qua thành luật. 'Lawmakers voted to ___ a new bill' là cách dùng chuẩn mực khi nói về việc luật được thông qua. 'incur' (phát sinh), 'opt for' (lựa chọn) và 'rally' (tập hợp) không hợp nghĩa ban hành luật.",emoji:"📜✍️",tip:"En + act (hành động) → biến một dự luật thành hành động thật sự, có hiệu lực.",trans:"Các nhà lập pháp đã bỏ phiếu thông qua một dự luật mới yêu cầu tất cả các nhà hàng phải hiển thị lượng calo trên thực đơn."},
+{w:"even-handed",s:"As a mediator, she was known for being remarkably ___ , never favouring either side of a dispute.",opts:["even-handed", "retaliatory", "ostensibly", "savvy"],correct:0,exp:"even-handed (adj) = công bằng, đối xử ngang nhau, không thiên vị. 'never favouring either side of a dispute' giải thích rõ nghĩa của từ. 'retaliatory' (trả đũa) trái ngược hoàn toàn; 'ostensibly' là trạng từ nên sai vị trí ngữ pháp; 'savvy' (khôn ngoan) không hợp nghĩa.",emoji:"⚖️🤝",tip:"Even (đều, ngang bằng) + handed (dùng tay xử lý) → xử lý mọi việc đều tay, không thiên vị bên nào.",trans:"Với vai trò là người hòa giải, cô được biết đến là người vô cùng công bằng, không bao giờ thiên vị bên nào trong một tranh chấp."},
+{w:"antigen",s:"Vaccines work by introducing a harmless piece of an ___ so the body can learn to recognise the real threat later.",opts:["antigen", "antibody", "pathogen", "symptom"],correct:0,exp:"antigen (n) = kháng nguyên — chất lạ (thường từ vi khuẩn/virus) kích thích hệ miễn dịch phản ứng. Câu mô tả đúng cơ chế vaccine: đưa vào một mảnh vô hại của kháng nguyên để cơ thể 'học' nhận diện. 'antibody' (kháng thể) là thứ cơ thể TẠO RA để chống lại antigen, không phải thứ được đưa vào; 'pathogen' (mầm bệnh) và 'symptom' (triệu chứng) không đúng vai trò trong câu.",emoji:"🦠🎯",tip:"Anti-gen = chất 'sinh ra' phản ứng kháng cự — còn antibody là thứ cơ thể tự tạo ra để đáp trả nó.",trans:"Vắc-xin hoạt động bằng cách đưa vào một mảnh vô hại của kháng nguyên để cơ thể có thể học cách nhận ra mối đe dọa thật sự sau này."},
+{w:"antibody",s:"After recovering from the infection, her immune system had produced enough ___ to protect her from getting sick again.",opts:["antibodies", "antigens", "pathogens", "symptoms"],correct:0,exp:"antibody (n) = kháng thể — protein do cơ thể sản xuất để chống lại kháng nguyên (antigen). 'her immune system had produced enough ___ to protect her' mô tả chính xác vai trò của kháng thể. 'antigen' là thứ bị chống lại, không phải thứ cơ thể tạo ra; 'pathogen' và 'symptom' sai nghĩa.",emoji:"🛡️🧬",tip:"Anti (chống lại) + body → 'đội quân' cơ thể tự tạo ra để chống lại kẻ xâm nhập.",trans:"Sau khi khỏi bệnh, hệ miễn dịch của cô đã sản sinh đủ kháng thể để bảo vệ cô khỏi bị bệnh lại."},
+{w:"pathogen",s:"Washing your hands regularly helps remove any ___ before they have a chance to enter your body.",opts:["pathogens", "antigens", "antibodies", "symptoms"],correct:0,exp:"pathogen (n) = mầm bệnh — vi sinh vật gây bệnh (vi khuẩn, virus, nấm...). 'remove any ___ before they enter your body' mô tả việc loại bỏ tác nhân gây bệnh từ bên ngoài. 'antigen' là một PHẦN của pathogen chứ không phải bản thân sinh vật gây bệnh; 'antibody' và 'symptom' sai nghĩa.",emoji:"🦠❌",tip:"Path (bệnh) + gen (sinh ra) → thứ 'sinh ra' bệnh tật.",trans:"Rửa tay thường xuyên giúp loại bỏ mọi mầm bệnh trước khi chúng có cơ hội xâm nhập vào cơ thể bạn."},
+{w:"ward off",s:"Getting enough sleep and eating well can help the body ___ common colds and other minor infections.",opts:["ward off", "devolve into", "rally", "incur"],correct:0,exp:"ward off (v) = đẩy lùi, ngăn chặn (một mối nguy hiểm, bệnh tật). 'help the body ___ common colds' cần động từ chỉ việc phòng chống bệnh. 'devolve into' (biến thành xấu đi), 'rally' (tập hợp) và 'incur' (phát sinh) không hợp nghĩa phòng ngừa.",emoji:"🛡️🤧",tip:"Ward (khu bảo vệ, canh gác) + off (đẩy ra) → canh gác và đẩy lùi kẻ xâm nhập.",trans:"Ngủ đủ giấc và ăn uống lành mạnh có thể giúp cơ thể đẩy lùi cảm lạnh thông thường và các bệnh nhiễm trùng nhỏ khác."},
+{w:"trigger",s:"For some people, certain foods can ___ a severe allergic reaction within minutes.",opts:["trigger", "ward off", "incur", "opt for"],correct:0,exp:"trigger (v) = kích hoạt, gây ra (một phản ứng, sự kiện) một cách đột ngột. 'certain foods can ___ a severe allergic reaction' mô tả việc gây ra phản ứng ngay lập tức — đúng nghĩa trigger. 'ward off' (đẩy lùi) mang nghĩa ngược lại; 'incur' và 'opt for' không hợp.",emoji:"🔫⚡",tip:"Như bóp cò súng (trigger) — chỉ một tác động nhỏ cũng khởi phát cả một phản ứng lớn.",trans:"Đối với một số người, một số loại thực phẩm nhất định có thể kích hoạt phản ứng dị ứng nghiêm trọng chỉ trong vài phút."},
+{w:"the bona fide disease",s:"Doctors had to distinguish between the patient's anxiety symptoms and ___ that required immediate treatment.",opts:["the bona fide disease", "the attenuated pathogen", "the livelong immunity", "the outbreak"],correct:0,exp:"the bona fide disease (n) = căn bệnh thật sự, không phải giả hay tưởng tượng. 'distinguish between... anxiety symptoms and ___' cần cụm chỉ 'bệnh thực sự' để đối lập với triệu chứng tâm lý. Ba đáp án còn lại đều không mang nghĩa 'bệnh thật'.",emoji:"✅🩺",tip:"Bona fide là cụm tiếng Latin nghĩa là 'thật, chính hãng' — hay dùng để phân biệt thật/giả.",trans:"Các bác sĩ phải phân biệt giữa các triệu chứng lo âu của bệnh nhân và căn bệnh thật sự cần được điều trị ngay lập tức."},
+{w:"attenuated",s:"Many vaccines contain a live but ___ form of the virus, too weak to cause serious illness.",opts:["attenuated", "bona fide", "livelong", "ostensible"],correct:0,exp:"attenuated (adj) = bị làm suy yếu (thường dùng cho virus/vi khuẩn trong vaccine). 'live but ___... too weak to cause serious illness' giải thích chính xác nghĩa của từ. 'bona fide' (thật), 'livelong' (trọn đời) và 'ostensible' (bề ngoài) không hợp nghĩa.",emoji:"🦠📉",tip:"Attenuate = 'làm nhẹ bớt, làm yếu đi' — virus trong vaccine bị 'ghìm sức mạnh' lại.",trans:"Nhiều loại vắc-xin chứa một dạng vi-rút sống nhưng đã bị làm suy yếu, quá yếu để gây bệnh nghiêm trọng."},
+{w:"inoculate",s:"Health workers travelled to remote villages to ___ children against measles and polio.",opts:["inoculate", "mutate", "administer", "render"],correct:0,exp:"inoculate (v) = tiêm chủng, chủng ngừa. 'to ___ children against measles and polio' là cách dùng chuẩn khi nói về việc tiêm vaccine phòng bệnh. 'mutate' (đột biến), 'administer' (cung cấp/quản lý, thường đi với 'the vaccine' chứ không trực tiếp với người) và 'render' (làm cho) không hợp nghĩa ở vị trí này.",emoji:"💉",tip:"Inoculate nghe hơi dài nhưng cứ nhớ: 'in' (đưa vào) — đưa vaccine vào cơ thể.",trans:"Các nhân viên y tế đã đi đến những ngôi làng xa xôi để tiêm chủng cho trẻ em phòng bệnh sởi và bại liệt."},
+{w:"render =cause",s:"The surgery, while successful, left him ___ unable to walk without assistance for several months.",opts:["rendered", "inoculated", "administered", "mutated"],correct:0,exp:"render (v, = cause) = làm cho (ai/cái gì) trở nên một trạng thái nào đó. 'left him ___ unable to walk' = khiến anh ấy không thể đi lại được. 'inoculated' (được tiêm chủng), 'administered' (được cung cấp) và 'mutated' (bị đột biến) đều sai nghĩa trong cấu trúc 'render + adj/participle'.",emoji:"➡️🔄",tip:"Render ở đây = 'cause' (làm cho) — luôn đi cùng một tính từ/quá khứ phân từ mô tả kết quả.",trans:"Ca phẫu thuật, dù thành công, đã khiến anh ấy không thể đi lại nếu không có người trợ giúp trong nhiều tháng."},
+{w:"livelong immunity",s:"Contracting chickenpox as a child usually grants ___ , meaning the person almost never catches it again.",opts:["livelong immunity", "the bona fide disease", "an outbreak", "a pathogen"],correct:0,exp:"livelong immunity (n) = sự miễn dịch kéo dài suốt đời. 'grants ___ , meaning the person almost never catches it again' giải thích trực tiếp nghĩa 'miễn dịch trọn đời'. Ba đáp án còn lại không mang nghĩa về khả năng miễn dịch lâu dài.",emoji:"🛡️♾️",tip:"Livelong = 'suốt cả cuộc đời' (long như long-lasting) + immunity (miễn dịch) = bảo vệ trọn đời.",trans:"Mắc bệnh thủy đậu khi còn nhỏ thường mang lại khả năng miễn dịch suốt đời, nghĩa là người đó gần như không bao giờ mắc lại bệnh này nữa."},
+{w:"administer",s:"The nurse carefully ___ the vaccine, injecting it into the upper arm.",opts:["administered", "inoculated", "rendered", "mutated"],correct:0,exp:"administer (v, trong cụm 'administer the vaccine') = cung cấp/tiêm vaccine cho bệnh nhân, có thể bằng đường uống hoặc đường tiêm. 'carefully ___ the vaccine, injecting it' — administer đi trực tiếp với 'the vaccine' làm tân ngữ. 'inoculate' thường đi với người + against + bệnh ('inoculate someone against measles'), không tự nhiên với 'the vaccine' làm tân ngữ trực tiếp ở đây; hai đáp án còn lại sai nghĩa.",emoji:"💉👩‍⚕️",tip:"Administer the vaccine = 'thực hiện' việc tiêm/uống vaccine, khác với inoculate (tiêm chủng CHO ai đó).",trans:"Y tá đã cẩn thận tiêm vắc-xin, đưa nó vào phần trên cánh tay."},
+{w:"mutate",s:"Viruses can ___ rapidly, which is why flu vaccines need to be updated almost every year.",opts:["mutate", "render", "administer", "inoculate"],correct:0,exp:"mutate (v) = đột biến, biến đổi gen. 'Viruses can ___ rapidly, which is why flu vaccines need to be updated' giải thích rõ lý do vaccine cúm phải cập nhật hằng năm — vì virus liên tục biến đổi. Ba đáp án còn lại không liên quan đến sự biến đổi gen.",emoji:"🧬🔀",tip:"Mutate giống 'mutant' (đột biến) trong phim siêu anh hùng — gen thay đổi tạo ra phiên bản mới.",trans:"Vi-rút có thể đột biến nhanh chóng, đó là lý do vì sao vắc-xin cúm cần được cập nhật gần như mỗi năm."},
+{w:"symptom",s:"A high fever, cough and sore throat are common ___ of the flu.",opts:["symptoms", "antigens", "antibodies", "pathogens"],correct:0,exp:"symptom (n) = triệu chứng — dấu hiệu cho thấy cơ thể đang có bệnh. 'A high fever, cough and sore throat are common ___' liệt kê chính xác các triệu chứng. Ba đáp án còn lại (kháng nguyên, kháng thể, mầm bệnh) là các khái niệm sinh học khác, không phải 'dấu hiệu bên ngoài' của bệnh.",emoji:"🤒🌡️",tip:"Symptom = những gì bạn 'cảm nhận được' khi bị bệnh, khác với nguyên nhân gây bệnh bên trong.",trans:"Sốt cao, ho và đau họng là những triệu chứng phổ biến của bệnh cúm."},
+{w:"needle",s:"Some children are more afraid of the ___ itself than of the disease it protects them from.",opts:["needle", "symptom", "outbreak", "pathogen"],correct:0,exp:"needle (n) = kim tiêm — dụng cụ dùng để tiêm vaccine hoặc lấy máu. 'more afraid of the ___ itself than of the disease' mô tả nỗi sợ kim tiêm, rất phổ biến ở trẻ em. Ba đáp án còn lại đều không phải là một vật dụng y tế cụ thể.",emoji:"💉😖",tip:"Đơn giản và trực quan nhất bài — needle chính là 'cây kim' bạn nhìn thấy khi đi tiêm.",trans:"Một số trẻ em sợ chính cây kim tiêm hơn là sợ căn bệnh mà nó giúp phòng ngừa."},
+{w:"trauma",s:"The car accident left her with lasting psychological ___ that took years of therapy to work through.",opts:["trauma", "outbreak", "epidemic", "hiccup"],correct:0,exp:"trauma (n) = tổn thương, chấn thương (có thể là thể chất hoặc tâm lý). 'lasting psychological ___ that took years of therapy' mô tả rõ một tổn thương tâm lý sâu sắc. Ba đáp án còn lại thuộc chủ đề dịch bệnh, không hợp ngữ cảnh tâm lý cá nhân này.",emoji:"💔🧠",tip:"Trauma trong tiếng Việt cũng hay được dùng nguyên gốc — 'sang chấn tâm lý'.",trans:"Vụ tai nạn xe hơi đã để lại cho cô những sang chấn tâm lý kéo dài, phải mất nhiều năm trị liệu mới vượt qua được."},
+{w:"autism",s:"Early diagnosis of ___ allows children to receive support services that can make a real difference in their development.",opts:["autism", "trauma", "epidemic", "outbreak"],correct:0,exp:"autism (n) = chứng tự kỷ — một rối loạn phát triển thần kinh. 'Early diagnosis of ___ allows children to receive support services' rõ ràng nói về một tình trạng phát triển ở trẻ em, không phải một tổn thương hay dịch bệnh. Ba đáp án còn lại sai chủ đề.",emoji:"🧩",tip:"Hình ảnh mảnh ghép (puzzle piece) 🧩 là biểu tượng quốc tế quen thuộc gắn với autism.",trans:"Chẩn đoán sớm chứng tự kỷ cho phép trẻ em nhận được các dịch vụ hỗ trợ có thể tạo ra sự khác biệt thực sự trong quá trình phát triển của các em."},
+{w:"outbreak",s:"Health officials rushed to contain the ___ before it could spread to neighbouring towns.",opts:["outbreak", "hiccup", "trauma", "autism"],correct:0,exp:"outbreak (n) = sự bùng phát (dịch bệnh) đột ngột trong một khu vực. 'rushed to contain the ___ before it could spread' mô tả chính xác tình huống kiểm soát dịch bệnh mới bùng phát. Ba đáp án còn lại không liên quan đến dịch bệnh lây lan.",emoji:"🚨🦠",tip:"Out (ra ngoài) + break (bùng vỡ) → bệnh 'vỡ tung' ra và lan rộng bất ngờ.",trans:"Các quan chức y tế đã vội vàng kiểm soát ổ dịch trước khi nó có thể lan sang các thị trấn lân cận."},
+{w:"contagious",s:"Chickenpox is highly ___ , so infected children are usually kept home from school for about a week.",opts:["contagious", "attenuated", "bona fide", "even-handed"],correct:0,exp:"contagious (adj) = dễ lây lan, lây nhiễm. 'highly ___, so infected children are kept home' giải thích lý do cách ly — vì bệnh dễ lây. 'attenuated' (bị làm suy yếu), 'bona fide' (thật) và 'even-handed' (công bằng) đều không mang nghĩa lây lan.",emoji:"🤧➡️🤧",tip:"Contact (tiếp xúc) ẩn trong từ → chỉ cần tiếp xúc là có thể lây.",trans:"Bệnh thủy đậu rất dễ lây lan, vì vậy trẻ em bị nhiễm bệnh thường phải nghỉ học ở nhà khoảng một tuần."},
+{w:"polio",s:"Thanks to widespread vaccination, ___ has been almost completely eradicated in most parts of the world.",opts:["polio", "autism", "trauma", "hiccup"],correct:0,exp:"polio (n) = bệnh bại liệt — một bệnh truyền nhiễm nguy hiểm mà vaccine đã gần như xóa sổ trên toàn cầu. 'widespread vaccination... almost completely eradicated' mô tả chính xác thành tựu chống lại polio. Ba đáp án còn lại không phải là bệnh có thể 'eradicated' bằng vaccine theo cách này.",emoji:"🦿💉",tip:"Polio là một trong những ví dụ kinh điển nhất về thành công của vaccine trong sách giáo khoa y tế.",trans:"Nhờ việc tiêm chủng rộng rãi, bệnh bại liệt đã gần như được xóa sổ hoàn toàn ở hầu hết các nơi trên thế giới."},
+{w:"epidemic",s:"If the number of cases keeps rising at this rate, health experts warn it could become a full-blown ___ .",opts:["epidemic", "hiccup", "trauma", "needle"],correct:0,exp:"epidemic (n) = dịch bệnh, nạn dịch lan rộng trong một cộng đồng/khu vực. 'the number of cases keeps rising... could become a full-blown ___' mô tả sự leo thang thành một đợt dịch lớn. Ba đáp án còn lại hoàn toàn không liên quan đến quy mô dịch bệnh.",emoji:"📈🦠",tip:"Epi (trên, giữa) + demos (dân chúng, gốc Hy Lạp) → bệnh lan khắp cả một cộng đồng dân cư.",trans:"Nếu số ca bệnh tiếp tục tăng với tốc độ này, các chuyên gia y tế cảnh báo nó có thể trở thành một trận dịch toàn diện."}
+];
+const CHAPTER3_DATA =
+[
+{w:"paralysis",s:"The disease can cause temporary ___ in the legs, making it impossible for patients to walk for several weeks.",opts:["paralysis", "eradication", "infiltration", "sterilization"],correct:0,exp:"paralysis (n) = chứng bại liệt, tê liệt, mất khả năng cử động. 'making it impossible for patients to walk' mô tả chính xác hậu quả của paralysis. 'eradication' (sự diệt trừ), 'infiltration' (sự xâm nhập) và 'sterilization' (sự triệt sản) đều không liên quan đến việc mất khả năng vận động.",emoji:"🦽",tip:"Para (không hoạt động) + lysis (làm tan, mất đi) → mất khả năng cử động của một bộ phận cơ thể.",trans:"Căn bệnh này có thể gây tê liệt tạm thời ở chân, khiến bệnh nhân không thể đi lại trong vài tuần."},
+{w:"eradicate",s:"Thanks to a decades-long vaccination campaign, smallpox became the first human disease to be completely ___ from the planet.",opts:["eradicated", "infiltrated", "sterilized", "paralysed"],correct:0,exp:"eradicate (v) = diệt trừ, xóa bỏ hoàn toàn (thường dùng cho bệnh dịch). 'the first human disease to be completely ___ from the planet' mô tả việc xóa sổ hoàn toàn — đúng nghĩa eradicate. 'infiltrate' (xâm nhập), 'sterilize' (triệt sản) và 'paralyse' (làm tê liệt) đều sai nghĩa trong ngữ cảnh xóa sổ dịch bệnh.",emoji:"🚫🦠",tip:"E (ra khỏi) + radic (rễ, gốc — như 'radical') → nhổ tận gốc, không để lại dấu vết.",trans:"Nhờ chiến dịch tiêm chủng kéo dài hàng thập kỷ, bệnh đậu mùa đã trở thành căn bệnh đầu tiên ở người được xóa sổ hoàn toàn khỏi hành tinh này."},
+{w:"infiltrate",s:"Once inside the body, the virus can ___ healthy cells and use them to make copies of itself.",opts:["infiltrate", "eradicate", "sterilize", "paralyse"],correct:0,exp:"infiltrate (v) = xâm nhập, len lỏi vào bên trong (thường một cách âm thầm). 'can ___ healthy cells and use them to make copies' mô tả việc virus chui vào bên trong tế bào — đúng nghĩa infiltrate. Ba đáp án còn lại (diệt trừ, triệt sản, làm tê liệt) không diễn tả hành động 'chui vào bên trong'.",emoji:"🕵️‍♂️🦠",tip:"Giống 'infiltrator' trong phim gián điệp — lẻn vào bên trong mà không ai hay biết.",trans:"Một khi đã ở bên trong cơ thể, vi-rút có thể xâm nhập vào các tế bào khỏe mạnh và sử dụng chúng để tự nhân bản."},
+{w:"sterilize",s:"To control the stray cat population humanely, many shelters choose to ___ the animals rather than euthanise them.",opts:["sterilize", "infiltrate", "eradicate", "paralyse"],correct:0,exp:"sterilize (v) = làm cho mất khả năng sinh sản, triệt sản. 'control the stray cat population... rather than euthanise them' cho thấy đây là biện pháp ngăn sinh sản nhân đạo — đúng nghĩa sterilize. Ba đáp án còn lại không liên quan đến khả năng sinh sản.",emoji:"🐱✂️",tip:"Sterile = 'vô trùng, không sinh sản được' → sterilize là khiến cho không thể sinh sản.",trans:"Để kiểm soát số lượng mèo hoang một cách nhân đạo, nhiều trung tâm cứu hộ chọn triệt sản những con vật này thay vì gây chết êm dịu cho chúng."},
+{w:"elicit",s:"A good vaccine should be able to ___ a strong immune response without causing the actual disease.",opts:["elicit", "sterilize", "infiltrate", "paralyse"],correct:0,exp:"elicit (v) = kích thích, khơi gợi, gây ra (một phản ứng). 'elicit a strong immune response' là cụm rất phổ biến khi nói về vaccine. Ba đáp án còn lại không mang nghĩa 'khơi gợi ra một phản ứng'.",emoji:"⚡🛡️",tip:"Elicit nghe hơi giống 'illicit' (bất hợp pháp) nhưng khác hẳn nghĩa — elicit là 'khơi ra', không liên quan pháp luật.",trans:"Một loại vắc-xin tốt cần có khả năng kích thích một phản ứng miễn dịch mạnh mà không gây ra căn bệnh thật sự."},
+{w:"maladies",s:"Herbal remedies have long been used to treat everyday ___ such as headaches and mild fevers.",opts:["maladies", "paralyses", "eradications", "sterilizations"],correct:0,exp:"malady/maladies (n) = bệnh tật, chứng bệnh nói chung. 'treat everyday ___ such as headaches and mild fevers' liệt kê các bệnh vặt thường gặp — đúng nghĩa maladies. Ba đáp án còn lại không phải danh từ chỉ 'các loại bệnh' nói chung theo cách này.",emoji:"🤒🌿",tip:"Mal (xấu, tệ, như trong 'malicious') → điều gì đó không ổn với cơ thể.",trans:"Các bài thuốc dân gian từ lâu đã được dùng để chữa những bệnh vặt hằng ngày như đau đầu và sốt nhẹ."},
+{w:"nonreplicating",s:"Because it uses a ___ virus, this type of vaccine cannot multiply inside the body or cause infection.",opts:["nonreplicating", "well-tolerated", "contagious", "attenuated"],correct:0,exp:"nonreplicating (adj) = không có khả năng tự nhân lên (thường nói về virus dùng trong vaccine). 'cannot multiply inside the body' giải thích trực tiếp nghĩa của từ. 'well-tolerated' (được dung nạp tốt) nói về tác dụng phụ chứ không phải khả năng nhân lên; 'contagious' (dễ lây) và 'attenuated' (bị làm suy yếu nhưng vẫn có thể nhân lên ở mức thấp) đều không đúng bằng.",emoji:"🚫🔁",tip:"Non (không) + replicate (nhân bản, sao chép) → không thể tự sao chép chính mình.",trans:"Vì sử dụng một loại vi-rút không tự nhân bản, loại vắc-xin này không thể sinh sôi bên trong cơ thể hay gây nhiễm trùng."},
+{w:"well tolerated",s:"Clinical trials showed the new medicine was ___ , with only mild and temporary side effects reported.",opts:["well tolerated", "nonreplicating", "eradicated", "elicited"],correct:0,exp:"well tolerated (adj) = được cơ thể dung nạp tốt, ít gây tác dụng phụ nghiêm trọng. 'only mild and temporary side effects reported' là minh chứng rõ ràng cho việc thuốc 'được dung nạp tốt'. Ba đáp án còn lại không liên quan đến mức độ an toàn của thuốc.",emoji:"👍💊",tip:"Tolerate = 'chịu đựng được' → well tolerated là cơ thể 'chịu' thuốc rất tốt, không phản ứng dữ dội.",trans:"Các thử nghiệm lâm sàng cho thấy loại thuốc mới được dung nạp tốt, chỉ có những tác dụng phụ nhẹ và tạm thời được ghi nhận."},
+{w:"foresee",s:"Even the best economists failed to ___ the sudden collapse of the housing market.",opts:["foresee", "elicit", "encompass", "hone"],correct:0,exp:"foresee (v) = thấy trước, dự đoán trước một sự việc sắp xảy ra. 'failed to ___ the sudden collapse' = không lường trước được sự sụp đổ. 'elicit' (khơi gợi), 'encompass' (bao gồm) và 'hone' (trau dồi) đều không mang nghĩa 'dự đoán trước'.",emoji:"🔮",tip:"Fore (trước) + see (nhìn) → nhìn thấy trước khi nó xảy ra.",trans:"Ngay cả những nhà kinh tế học giỏi nhất cũng không thể lường trước được sự sụp đổ đột ngột của thị trường nhà đất."},
+{w:"utilize",s:"The new factory was designed to ___ solar energy as its main power source.",opts:["utilize", "foresee", "hone", "encompass"],correct:0,exp:"utilize (v) = sử dụng, tận dụng một cách hiệu quả. 'designed to ___ solar energy as its main power source' cần động từ chỉ việc sử dụng nguồn năng lượng. Ba đáp án còn lại không mang nghĩa 'sử dụng'.",emoji:"🔧☀️",tip:"Utilize nghe trang trọng hơn 'use' nhưng nghĩa tương tự — hay gặp trong văn phong học thuật.",trans:"Nhà máy mới được thiết kế để tận dụng năng lượng mặt trời làm nguồn năng lượng chính."},
+{w:"inherent ability",s:"Some researchers argue that musical talent is an ___ rather than something learned entirely through practice.",opts:["inherent ability", "intellectual pursuit", "spatial constraint", "ruthless approach"],correct:0,exp:"inherent ability (n) = khả năng vốn có, bẩm sinh (không phải do học mà có). 'rather than something learned entirely through practice' đối lập trực tiếp với 'bẩm sinh' — đúng nghĩa inherent ability. Các đáp án còn lại không mang nghĩa 'khả năng có sẵn từ khi sinh ra'.",emoji:"🧬🎵",tip:"Inherent = 'vốn có, cố hữu' — như một phần đã có sẵn bên trong, không cần học.",trans:"Một số nhà nghiên cứu cho rằng tài năng âm nhạc là một khả năng bẩm sinh chứ không phải điều hoàn toàn học được qua luyện tập."},
+{w:"hone",s:"She spent years travelling and performing in small clubs to ___ her skills as a stand-up comedian.",opts:["hone", "encompass", "usher in", "foresee"],correct:0,exp:"hone (v) = trau dồi, mài giũa một kỹ năng qua thời gian và luyện tập. 'spent years... to ___ her skills' mô tả quá trình rèn luyện kỹ năng dần dần — đúng nghĩa hone. Ba đáp án còn lại không liên quan đến việc rèn luyện kỹ năng.",emoji:"🔪🎤",tip:"Hone giống 'sharpen' (mài sắc) — mài cho sắc bén hơn, ở đây là mài giũa kỹ năng.",trans:"Cô đã dành nhiều năm đi lưu diễn và biểu diễn ở các câu lạc bộ nhỏ để mài giũa kỹ năng diễn hài độc thoại của mình."},
+{w:"intellectual",s:"The debate club offers students a chance to engage in serious ___ discussion outside of regular classes.",opts:["intellectual", "spatially constrained", "ruthless", "deferential"],correct:0,exp:"intellectual (adj) = thuộc về trí tuệ, đòi hỏi tư duy sâu sắc. 'serious ___ discussion' cần tính từ mô tả các cuộc tranh luận mang tính học thuật, trí tuệ. Ba đáp án còn lại đều không phù hợp để mô tả 'cuộc thảo luận'.",emoji:"🧠💬",tip:"Intellect = 'trí tuệ' → intellectual liên quan đến việc suy nghĩ, lý luận sâu sắc.",trans:"Câu lạc bộ tranh biện mang đến cho học sinh cơ hội tham gia vào các cuộc thảo luận trí tuệ nghiêm túc ngoài giờ học thông thường."},
+{w:"beyond",s:"The scientist's discoveries went far ___ what anyone in her field had thought possible.",opts:["beyond", "within", "beneath", "among"],correct:0,exp:"beyond (prep) = vượt ra ngoài, hơn hẳn một giới hạn nào đó. 'went far ___ what anyone... had thought possible' = vượt xa những gì người ta nghĩ là có thể — đúng nghĩa beyond. 'within' (bên trong), 'beneath' (bên dưới) và 'among' (giữa) đều không diễn tả ý 'vượt qua giới hạn'.",emoji:"🚀",tip:"Be + yond (xa hơn, gốc cổ) → ở phía xa hơn, vượt quá một điểm nào đó.",trans:"Những khám phá của nhà khoa học vượt xa những gì bất kỳ ai trong lĩnh vực của bà từng nghĩ là có thể."},
+{w:"encompass",s:"The new curriculum will ___ everything from basic grammar to advanced literary analysis.",opts:["encompass", "hone", "usher in", "foresee"],correct:0,exp:"encompass (v) = bao gồm, bao quát một phạm vi rộng. 'will ___ everything from basic grammar to advanced literary analysis' liệt kê một phạm vi rộng các nội dung — đúng nghĩa encompass. Ba đáp án còn lại không mang nghĩa 'bao gồm'.",emoji:"🌐📚",tip:"En (làm cho) + compass (la bàn, vòng tròn bao quanh) → bao trọn cả một phạm vi.",trans:"Chương trình học mới sẽ bao quát mọi thứ từ ngữ pháp cơ bản đến phân tích văn học nâng cao."},
+{w:"spatially constrained",s:"Living in a tiny apartment, the family felt increasingly ___ , with no room to store even basic furniture.",opts:["spatially constrained", "intellectually engaged", "ruthlessly ambitious", "deferentially polite"],correct:0,exp:"spatially constrained (adj) = bị giới hạn về mặt không gian, chật hẹp. 'no room to store even basic furniture' mô tả rõ sự thiếu không gian — đúng nghĩa spatially constrained. Ba đáp án còn lại không liên quan đến vấn đề diện tích, không gian sống.",emoji:"📦🏠",tip:"Spatial = 'thuộc về không gian' + constrained (bị bó buộc) → không gian bị bó hẹp lại.",trans:"Sống trong một căn hộ nhỏ xíu, gia đình cảm thấy ngày càng bị hạn chế về không gian, không có chỗ để cất ngay cả đồ nội thất cơ bản."},
+{w:"usher in",s:"The invention of the printing press helped to ___ a new era of widespread literacy in Europe.",opts:["usher in", "encompass", "hone", "foresee"],correct:0,exp:"usher in (v) = mở ra, báo hiệu sự bắt đầu của một giai đoạn mới. 'helped to ___ a new era of widespread literacy' = mở ra một kỷ nguyên mới — đúng nghĩa usher in. Ba đáp án còn lại không mang nghĩa 'mở ra một thời kỳ mới'.",emoji:"🚪✨",tip:"Usher = 'người dẫn khách vào chỗ ngồi' → usher in nghĩa là 'dẫn' một thời đại mới bước vào.",trans:"Sự phát minh ra máy in đã giúp mở ra một kỷ nguyên mới về việc phổ cập khả năng đọc viết ở châu Âu."},
+{w:"ruthlessly",s:"The dictator ___ crushed any form of political opposition, showing no mercy to his critics.",opts:["ruthlessly", "deferentially", "intellectually", "inherently"],correct:0,exp:"ruthlessly (adv) = một cách tàn nhẫn, không thương xót. 'crushed... showing no mercy' giải thích trực tiếp nghĩa của từ. Ba đáp án còn lại đều không mang sắc thái 'tàn nhẫn, không khoan nhượng'.",emoji:"⚔️😠",tip:"Ruth (lòng trắc ẩn, từ cổ) + less (không có) → không còn chút lòng thương xót nào.",trans:"Nhà độc tài đã tàn nhẫn dập tắt mọi hình thức đối lập chính trị, không hề khoan nhượng với những người chỉ trích ông ta."},
+{w:"virtue",s:"Patience is often considered a ___ , especially when dealing with difficult customers.",opts:["virtue", "doctrine", "hallmark", "malady"],correct:0,exp:"virtue (n) = đức hạnh, phẩm chất tốt đẹp. 'Patience is often considered a ___' — sự kiên nhẫn được xem là một đức tính tốt, đúng nghĩa virtue. 'doctrine' (học thuyết), 'hallmark' (dấu ấn đặc trưng) và 'malady' (bệnh tật) đều không mang nghĩa 'phẩm chất đạo đức tốt'.",emoji:"😇",tip:"Virtue liên quan đến 'virtuous' (đạo đức) — một phẩm chất đáng khen.",trans:"Sự kiên nhẫn thường được coi là một đức tính tốt, đặc biệt là khi đối phó với những khách hàng khó tính."},
+{w:"extant",s:"The museum houses one of the oldest ___ copies of the manuscript, dating back over 500 years.",opts:["extant", "contemporary", "extinct", "conventional"],correct:0,exp:"extant (adj) = còn tồn tại, còn sót lại đến ngày nay (thường dùng cho tài liệu, di tích cổ). 'one of the oldest ___ copies... dating back over 500 years' mô tả một bản sao cổ vẫn còn tồn tại — đúng nghĩa extant. 'contemporary' (đương đại) trái nghĩa về mặt thời gian; 'extinct' (đã tuyệt chủng) và 'conventional' (thông thường) đều sai nghĩa.",emoji:"📜⏳",tip:"Extant nghe gần giống 'exist' (tồn tại) — vẫn còn 'exist' đến tận bây giờ.",trans:"Bảo tàng lưu giữ một trong những bản sao còn tồn tại lâu đời nhất của bản thảo này, có niên đại hơn 500 năm."},
+{w:"ethnocentric",s:"Judging another culture's traditions as inferior to one's own is a classic example of an ___ mindset.",opts:["ethnocentric", "intellectual", "deferential", "contemporary"],correct:0,exp:"ethnocentric (adj) = có xu hướng đánh giá các nền văn hóa khác dựa trên tiêu chuẩn của chính dân tộc mình, thường mang tính thiên vị. 'judging another culture's traditions as inferior to one's own' mô tả chính xác tư duy ethnocentric. Ba đáp án còn lại không liên quan đến việc so sánh văn hóa một cách thiên vị.",emoji:"🌍🚫",tip:"Ethno (dân tộc) + centric (lấy làm trung tâm) → coi dân tộc mình là trung tâm, chuẩn mực.",trans:"Đánh giá truyền thống của một nền văn hóa khác là thấp kém hơn nền văn hóa của mình là một ví dụ điển hình của tư duy vị chủng."},
+{w:"overstated",s:"Critics argue that the health benefits of the supplement have been greatly ___ in the company's advertising.",opts:["overstated", "envisioned", "hypothesized", "encompassed"],correct:0,exp:"overstate (v) = nói quá, phóng đại hơn thực tế. 'greatly ___ in the company's advertising' cho thấy lợi ích được thổi phồng lên trong quảng cáo — đúng nghĩa overstated. Ba đáp án còn lại không mang nghĩa 'phóng đại'.",emoji:"📢⚠️",tip:"Over (quá mức) + state (phát biểu) → phát biểu, tuyên bố quá mức so với thực tế.",trans:"Những người chỉ trích cho rằng lợi ích sức khỏe của thực phẩm chức năng này đã bị phóng đại quá mức trong quảng cáo của công ty."},
+{w:"flourish",s:"With plenty of sunlight and regular watering, these tomato plants will ___ throughout the summer.",opts:["flourish", "wither", "extant", "stationary"],correct:0,exp:"flourish (v) = phát triển mạnh mẽ, sinh trưởng tốt. 'plenty of sunlight and regular watering... throughout the summer' là điều kiện lý tưởng để cây phát triển tốt — đúng nghĩa flourish. 'wither' (héo úa) trái nghĩa hoàn toàn; 'extant' (còn tồn tại) và 'stationary' (đứng yên) không hợp nghĩa.",emoji:"🌱☀️",tip:"Flourish nghe giống 'flower' (hoa) → nở rộ, phát triển tươi tốt.",trans:"Với đủ ánh nắng và tưới nước đều đặn, những cây cà chua này sẽ phát triển tươi tốt suốt mùa hè."},
+{w:"envision",s:"The architect could already ___ the finished building rising above the city skyline.",opts:["envision", "overstate", "hypothesize", "pepper"],correct:0,exp:"envision (v) = hình dung, mường tượng ra một điều gì đó trong tương lai. 'could already ___ the finished building' = đã có thể hình dung công trình hoàn thiện — đúng nghĩa envision. Ba đáp án còn lại không mang nghĩa 'hình dung, tưởng tượng'.",emoji:"🏙️💭",tip:"En (làm cho) + vision (tầm nhìn, hình ảnh) → tạo ra một hình ảnh trong đầu về tương lai.",trans:"Kiến trúc sư đã có thể hình dung được tòa nhà hoàn thiện vươn lên trên đường chân trời của thành phố."},
+{w:"contemporary",s:"The exhibition features works by ___ artists, all of whom are still alive and actively creating today.",opts:["contemporary", "extant", "ethnocentric", "deferential"],correct:0,exp:"contemporary (adj) = đương thời, thuộc về thời hiện tại. 'all of whom are still alive and actively creating today' giải thích rõ nghĩa 'đương đại'. Ba đáp án còn lại không liên quan đến khái niệm thời gian hiện tại.",emoji:"🎨🕰️",tip:"Con (cùng) + tempor (thời gian, như 'temporary') → sống cùng thời điểm hiện tại.",trans:"Triển lãm trưng bày các tác phẩm của những nghệ sĩ đương đại, tất cả đều vẫn còn sống và đang sáng tác tích cực ngày nay."},
+{w:"hypothesize",s:"Scientists ___ that the strange rock formations were caused by an ancient volcanic eruption.",opts:["hypothesized", "envisioned", "overstated", "peppered"],correct:0,exp:"hypothesize (v) = đưa ra giả thuyết, một lời giải thích chưa được kiểm chứng. 'that the strange rock formations were caused by an ancient volcanic eruption' là một giả thuyết khoa học điển hình. Ba đáp án còn lại không mang nghĩa 'đưa ra giả thuyết'.",emoji:"🔬💡",tip:"Hypothesis = 'giả thuyết' → hypothesize là hành động đưa ra giả thuyết đó.",trans:"Các nhà khoa học đưa ra giả thuyết rằng những hình thù đá kỳ lạ này là do một vụ phun trào núi lửa cổ đại gây ra."},
+{w:"doctrine",s:"The political party's official ___ calls for lower taxes and reduced government spending.",opts:["doctrine", "virtue", "hallmark", "dialectic"],correct:0,exp:"doctrine (n) = học thuyết, giáo lý, hệ tư tưởng chính thức của một tổ chức, tôn giáo hay đảng phái. 'the political party's official ___ calls for lower taxes' mô tả một hệ tư tưởng chính thức — đúng nghĩa doctrine. Ba đáp án còn lại không mang nghĩa 'học thuyết chính thức'.",emoji:"📖⚖️",tip:"Doctrine liên quan đến gốc Latin 'docere' (giảng dạy) → những điều được truyền bá như chân lý.",trans:"Học thuyết chính thức của đảng chính trị này kêu gọi giảm thuế và cắt giảm chi tiêu của chính phủ."},
+{w:"betterment",s:"She devoted her entire career to working for the ___ of public education in rural areas.",opts:["betterment", "doctrine", "dialectic", "manipulation"],correct:0,exp:"betterment (n) = sự cải thiện, làm cho tốt hơn. 'devoted her entire career to working for the ___ of public education' = cống hiến để cải thiện giáo dục — đúng nghĩa betterment. Ba đáp án còn lại không mang nghĩa 'sự cải thiện'.",emoji:"📈🙌",tip:"Better (tốt hơn) + ment (hậu tố danh từ hóa) → quá trình làm cho mọi thứ tốt hơn.",trans:"Cô đã dành cả sự nghiệp của mình để làm việc vì sự cải thiện của nền giáo dục công ở các vùng nông thôn."},
+{w:"pepper",s:"After the press conference, reporters began to ___ the CEO with questions about the company's falling profits.",opts:["pepper", "hypothesize", "envision", "cultivate"],correct:0,exp:"pepper (v) = hỏi dồn dập, liên tục đưa ra nhiều câu hỏi. 'began to ___ the CEO with questions' mô tả việc các phóng viên liên tục đặt câu hỏi — đúng nghĩa pepper. Ba đáp án còn lại không mang nghĩa 'hỏi dồn dập'.",emoji:"🎤❓",tip:"Giống việc rắc tiêu (pepper) khắp nơi — câu hỏi 'rắc' liên tục, dồn dập không ngừng.",trans:"Sau cuộc họp báo, các phóng viên bắt đầu dồn dập chất vấn vị CEO về lợi nhuận sụt giảm của công ty."},
+{w:"dialectic",s:"The philosophy course explores the ___ between opposing ideas as a way of arriving at a deeper truth.",opts:["dialectic", "doctrine", "betterment", "virtue"],correct:0,exp:"dialectic (n) = phép biện chứng, phương pháp lập luận qua việc đối chiếu các ý kiến trái ngược để tìm ra chân lý. 'the ___ between opposing ideas as a way of arriving at a deeper truth' mô tả đúng bản chất của dialectic. Ba đáp án còn lại không mang nghĩa 'phương pháp lập luận biện chứng'.",emoji:"⚖️💭",tip:"Dialectic liên quan đến 'dialogue' (đối thoại) — chân lý được tìm ra qua tranh luận, đối thoại.",trans:"Khóa học triết học khám phá phép biện chứng giữa các ý tưởng đối lập như một cách để đi đến một chân lý sâu sắc hơn."},
+{w:"ambiguity",s:"The contract's wording was full of ___ , leaving both parties unsure of who was responsible for the damage.",opts:["ambiguity", "betterment", "dialectic", "manipulation"],correct:0,exp:"ambiguity (n) = sự mơ hồ, tối nghĩa, có thể hiểu theo nhiều cách. 'leaving both parties unsure of who was responsible' là hậu quả trực tiếp của sự mơ hồ trong ngôn từ — đúng nghĩa ambiguity. Ba đáp án còn lại không liên quan đến việc khó hiểu, mơ hồ.",emoji:"❓📄",tip:"Ambi (cả hai, hai mặt) → có thể hiểu theo hai nghĩa trở lên, không rõ ràng.",trans:"Từ ngữ trong hợp đồng đầy sự mơ hồ, khiến cả hai bên không chắc chắn ai là người chịu trách nhiệm về thiệt hại."},
+{w:"conceive",s:"Many people ___ of success purely in terms of money, ignoring other measures like happiness or health.",opts:["conceive", "cultivate", "pepper", "hypothesize"],correct:0,exp:"conceive (v, thường đi với 'conceive of') = nhìn nhận, hình dung về một khái niệm theo một cách nhất định. '___ of success purely in terms of money' = nhìn nhận thành công chỉ qua lăng kính tiền bạc — đúng nghĩa conceive of. Ba đáp án còn lại không hợp nghĩa 'nhìn nhận'.",emoji:"💭💰",tip:"Conceive of something = 'hình thành trong đầu một cách nhìn' về điều gì đó.",trans:"Nhiều người hình dung về thành công chỉ đơn thuần qua tiền bạc, bỏ qua những thước đo khác như hạnh phúc hay sức khỏe."},
+{w:"manipulation",s:"The scandal revealed years of financial ___ , with executives secretly altering the company's earnings reports.",opts:["manipulation", "betterment", "ambiguity", "dialectic"],correct:0,exp:"manipulation (n) = sự thao túng, điều khiển một cách gian lận hoặc không trung thực. 'secretly altering the company's earnings reports' mô tả chính xác hành vi thao túng số liệu — đúng nghĩa manipulation. Ba đáp án còn lại không mang nghĩa 'thao túng, gian lận'.",emoji:"🎭📊",tip:"Manipulation liên quan đến 'manipulate' (thao túng bằng tay) → điều khiển, bóp méo theo ý mình.",trans:"Vụ bê bối đã phơi bày nhiều năm gian lận tài chính, với các giám đốc điều hành bí mật sửa đổi báo cáo lợi nhuận của công ty."},
+{w:"unskillfully",s:"The amateur electrician ___ rewired the socket, leaving several wires exposed and dangerous.",opts:["unskillfully", "deferentially", "ruthlessly", "predominantly"],correct:0,exp:"unskillfully (adv) = một cách vụng về, thiếu kỹ năng. 'leaving several wires exposed and dangerous' là hậu quả của việc làm thiếu chuyên nghiệp — đúng nghĩa unskillfully. Ba đáp án còn lại không mang nghĩa 'vụng về, thiếu tay nghề'.",emoji:"🔌😬",tip:"Un (không) + skillfully (một cách khéo léo) → hoàn toàn không khéo léo, còn vụng về.",trans:"Người thợ điện nghiệp dư đã đấu lại dây ổ điện một cách vụng về, để lại nhiều dây điện hở và nguy hiểm."},
+{w:"disciples",s:"The philosopher's most devoted ___ continued to spread his teachings long after his death.",opts:["disciples", "doctrines", "virtues", "hallmarks"],correct:0,exp:"disciple(s) (n) = đệ tử, học trò trung thành đi theo một người thầy hoặc tư tưởng. 'continued to spread his teachings long after his death' mô tả những học trò tiếp nối di sản của thầy — đúng nghĩa disciples. Ba đáp án còn lại là danh từ trừu tượng (học thuyết, đức hạnh, dấu ấn), không chỉ người.",emoji:"🧑‍🏫🙏",tip:"Disciple liên quan đến 'discipline' (kỷ luật, môn học) → người theo học và tuân theo lời dạy của thầy.",trans:"Những môn đệ trung thành nhất của nhà triết học vẫn tiếp tục truyền bá tư tưởng của ông rất lâu sau khi ông qua đời."},
+{w:"cultivate",s:"Farmers in this region ___ rice and vegetables using traditional irrigation methods passed down for generations.",opts:["cultivate", "hone", "envision", "pepper"],correct:0,exp:"cultivate (v) = gieo trồng, canh tác đất đai, cây cối. 'using traditional irrigation methods' cho thấy đây là hoạt động nông nghiệp — đúng nghĩa cultivate. Ba đáp án còn lại không liên quan đến việc trồng trọt.",emoji:"🌾👨‍🌾",tip:"Cultivate có gốc Latin 'colere' (canh tác) → chăm sóc đất đai để cây phát triển.",trans:"Nông dân ở vùng này canh tác lúa và rau bằng các phương pháp tưới tiêu truyền thống được truyền lại qua nhiều thế hệ."},
+{w:"prevailing",s:"The ___ view among economists is that inflation will gradually slow down over the next year.",opts:["prevailing", "extant", "contemporary", "conventional"],correct:0,exp:"prevailing (adj) = thịnh hành, phổ biến nhất tại một thời điểm. 'The ___ view among economists' = quan điểm phổ biến nhất trong giới kinh tế học — đúng nghĩa prevailing. 'extant' (còn tồn tại), 'contemporary' (đương đại) và 'conventional' (thông thường) đều gần nghĩa nhưng không diễn tả chính xác ý 'chiếm ưu thế, phổ biến nhất hiện nay'.",emoji:"📊🗣️",tip:"Prevail = 'thắng thế, chiếm ưu thế' → prevailing là cái đang 'thắng thế', được nhiều người theo nhất.",trans:"Quan điểm thịnh hành trong giới kinh tế học là lạm phát sẽ dần chậm lại trong năm tới."},
+{w:"hallmark",s:"Attention to detail has always been the ___ of this designer's work.",opts:["hallmark", "doctrine", "dialectic", "ambiguity"],correct:0,exp:"hallmark (n) = dấu ấn, đặc điểm nổi bật, đặc trưng của ai/cái gì. 'Attention to detail has always been the ___ of this designer's work' = sự tỉ mỉ là đặc trưng nổi bật — đúng nghĩa hallmark. Ba đáp án còn lại không mang nghĩa 'đặc điểm nhận diện, dấu ấn riêng'.",emoji:"🏷️✨",tip:"Hallmark vốn là dấu đóng trên vàng bạc để chứng nhận chất lượng → nay dùng để chỉ 'dấu ấn đặc trưng'.",trans:"Sự chú ý đến từng chi tiết luôn là dấu ấn đặc trưng trong các tác phẩm của nhà thiết kế này."},
+{w:"approach",s:"The new teacher took a more hands-on ___ , encouraging students to learn through experiments rather than lectures.",opts:["approach", "doctrine", "dialectic", "manipulation"],correct:0,exp:"approach (n) = cách tiếp cận, phương pháp thực hiện điều gì đó. 'a more hands-on ___, encouraging students to learn through experiments' mô tả một phương pháp giảng dạy cụ thể — đúng nghĩa approach. Ba đáp án còn lại không mang nghĩa 'phương pháp, cách thức'.",emoji:"🧑‍🏫🔬",tip:"Approach vừa là danh từ vừa là động từ, đều mang nghĩa 'tiếp cận' theo một cách nào đó.",trans:"Giáo viên mới đã áp dụng một cách tiếp cận thực hành nhiều hơn, khuyến khích học sinh học qua thí nghiệm thay vì các bài giảng."},
+{w:"deferential",s:"Junior staff members were expected to remain ___ towards senior executives, rarely questioning their decisions.",opts:["deferential", "ruthless", "ethnocentric", "unskillful"],correct:0,exp:"deferential (adj) = tôn kính, cung kính, thể hiện sự tôn trọng đối với người có địa vị cao hơn. 'rarely questioning their decisions' cho thấy thái độ phục tùng, kính trọng — đúng nghĩa deferential. Ba đáp án còn lại đều mang sắc thái trái ngược (tàn nhẫn, phân biệt, vụng về).",emoji:"🙇‍♂️",tip:"Defer to someone = 'nhường/tôn trọng ý kiến của ai đó' → deferential là thái độ luôn nhường nhịn, kính trọng.",trans:"Các nhân viên cấp dưới được yêu cầu luôn giữ thái độ cung kính với các lãnh đạo cấp cao, hiếm khi đặt câu hỏi về quyết định của họ."},
+{w:"respiratory system",s:"Long-term exposure to smoke can seriously damage the ___ , leading to chronic coughing and breathing difficulties.",opts:["respiratory system", "cardiovascular system", "digestive system", "nervous system"],correct:0,exp:"respiratory system (n) = hệ hô hấp, gồm phổi và đường thở. 'chronic coughing and breathing difficulties' là các triệu chứng liên quan trực tiếp đến hệ hô hấp — đúng nghĩa respiratory system. Ba đáp án còn lại là các hệ cơ quan khác, không liên quan đến việc thở.",emoji:"🫁💨",tip:"Respire = 'hô hấp, thở' → respiratory system là hệ thống giúp cơ thể thở.",trans:"Việc tiếp xúc với khói thuốc trong thời gian dài có thể gây tổn hại nghiêm trọng đến hệ hô hấp, dẫn đến ho mãn tính và khó thở."},
+{w:"pollutant",s:"Factories in the area release large amounts of harmful ___ directly into the river every day.",opts:["pollutants", "particulates", "exhaust", "combustion"],correct:0,exp:"pollutant (n) = chất gây ô nhiễm nói chung, có thể ở dạng khí, lỏng hoặc rắn. 'release... directly into the river' cho thấy đây là chất thải làm ô nhiễm nguồn nước — đúng nghĩa pollutant. 'particulate' (hạt bụi mịn) chỉ là MỘT loại pollutant cụ thể; 'exhaust' (khí thải xe) và 'combustion' (sự đốt cháy) không hợp nghĩa ở đây.",emoji:"🏭☠️",tip:"Pollute = 'làm ô nhiễm' → pollutant chính là 'thủ phạm' gây ra ô nhiễm.",trans:"Các nhà máy trong khu vực này thải ra một lượng lớn chất gây ô nhiễm trực tiếp xuống dòng sông mỗi ngày."},
+{w:"particulate",s:"The smog contains tiny ___ that can travel deep into the lungs when inhaled.",opts:["particulates", "pollutants", "combustion", "exhaust"],correct:0,exp:"particulate(s) (n) = các hạt nhỏ (bụi, tro...) lơ lửng trong không khí. 'tiny ___ that can travel deep into the lungs' mô tả chính xác các hạt bụi mịn trong khói bụi — đúng nghĩa particulate. 'pollutant' là khái niệm rộng hơn (chất ô nhiễm nói chung); 'combustion' và 'exhaust' không phải là 'hạt'.",emoji:"🌫️🔬",tip:"Particulate liên quan đến 'particle' (hạt) → những hạt li ti trong không khí.",trans:"Sương mù chứa các hạt bụi mịn nhỏ li ti có thể xâm nhập sâu vào phổi khi hít phải."},
+{w:"penetrate",s:"These fine particles are small enough to ___ deep into lung tissue and even enter the bloodstream.",opts:["penetrate", "diffuse", "combust", "exhaust"],correct:0,exp:"penetrate (v) = xuyên qua, thâm nhập sâu vào bên trong. 'small enough to ___ deep into lung tissue and even enter the bloodstream' mô tả việc các hạt bụi xuyên sâu vào mô phổi — đúng nghĩa penetrate. 'diffuse' (khuếch tán ra) mang hướng ngược lại; 'combust' (đốt cháy) và 'exhaust' (làm kiệt sức/khí thải) không hợp nghĩa.",emoji:"🎯🫁",tip:"Penetrate nghe giống 'pierce' — xuyên thủng, đâm sâu vào bên trong một vật gì đó.",trans:"Những hạt bụi mịn này đủ nhỏ để có thể xâm nhập sâu vào mô phổi và thậm chí đi vào máu."},
+{w:"diffuse",s:"Smoke from the wildfire began to ___ across the entire valley, turning the sky a hazy orange.",opts:["diffuse", "penetrate", "combust", "exhaust"],correct:0,exp:"diffuse (v) = khuếch tán, lan tỏa ra một khu vực rộng. 'began to ___ across the entire valley, turning the sky... orange' mô tả khói lan rộng khắp thung lũng — đúng nghĩa diffuse. 'penetrate' (xuyên vào bên trong) mang hướng khác; 'combust' và 'exhaust' không hợp nghĩa.",emoji:"💨🌄",tip:"Diffuse nghe giống 'diffusion' trong hóa học — các phân tử lan tỏa đều ra không gian xung quanh.",trans:"Khói từ đám cháy rừng bắt đầu lan tỏa khắp cả thung lũng, khiến bầu trời chuyển sang màu cam mờ ảo."},
+{w:"cardiovascular system",s:"Regular aerobic exercise, such as running or swimming, strengthens the ___ and lowers the risk of heart disease.",opts:["cardiovascular system", "respiratory system", "nervous system", "digestive system"],correct:0,exp:"cardiovascular system (n) = hệ thống tim mạch, gồm tim và mạch máu. 'lowers the risk of heart disease' liên quan trực tiếp đến sức khỏe tim mạch — đúng nghĩa cardiovascular system. Ba đáp án còn lại là các hệ cơ quan khác, không liên quan trực tiếp đến tim.",emoji:"❤️🏃",tip:"Cardio (tim, như 'cardiac') + vascular (mạch máu) → hệ thống tim và mạch máu.",trans:"Tập thể dục nhịp điệu đều đặn, chẳng hạn như chạy bộ hay bơi lội, giúp tăng cường hệ tim mạch và giảm nguy cơ mắc bệnh tim."},
+{w:"combustion",s:"The internal ___ engine works by burning fuel inside a chamber to generate power.",opts:["combustion", "exhaust", "diffusion", "penetration"],correct:0,exp:"combustion (n) = sự đốt cháy, thường của nhiên liệu để tạo năng lượng. 'internal ___ engine works by burning fuel' — cụm 'internal combustion engine' (động cơ đốt trong) là thuật ngữ cố định. Ba đáp án còn lại không mang nghĩa 'sự đốt cháy'.",emoji:"🔥⚙️",tip:"Combustion liên quan đến 'combust' (bốc cháy) → quá trình đốt cháy tạo ra năng lượng.",trans:"Động cơ đốt trong hoạt động bằng cách đốt nhiên liệu bên trong một buồng để tạo ra năng lượng."},
+{w:"exhaust",s:"Standing too close to the back of a running bus, you can clearly smell the ___ coming from its pipe.",opts:["exhaust", "combustion", "particulate", "pollutant"],correct:0,exp:"exhaust (n) = khí thải, đặc biệt là khí thải ra từ động cơ xe cộ. 'coming from its pipe' (ống xả) chỉ rõ đây là khí thải xe — đúng nghĩa exhaust. Ba đáp án còn lại là các khái niệm liên quan nhưng không chỉ đích danh 'khí thải từ ống xả'.",emoji:"🚌💨",tip:"Exhaust pipe = 'ống xả' → exhaust chính là thứ khí thoát ra từ ống đó.",trans:"Đứng quá gần phía sau một chiếc xe buýt đang chạy, bạn có thể dễ dàng ngửi thấy khí thải phát ra từ ống xả của nó."},
+{w:"vehicular pollution",s:"In big cities, ___ is one of the main causes of poor air quality, especially during rush hour.",opts:["vehicular pollution", "cardiovascular disease", "respiratory failure", "chemical combustion"],correct:0,exp:"vehicular pollution (n) = ô nhiễm gây ra bởi các phương tiện giao thông. 'especially during rush hour' — thời điểm có nhiều xe cộ lưu thông nhất — gợi ý rõ nguồn gây ô nhiễm là xe cộ — đúng nghĩa vehicular pollution. Ba đáp án còn lại không liên quan đến nguyên nhân gây ô nhiễm không khí đô thị.",emoji:"🚗🌫️",tip:"Vehicular liên quan đến 'vehicle' (xe cộ) → ô nhiễm 'đến từ' xe cộ.",trans:"Ở các thành phố lớn, ô nhiễm do phương tiện giao thông là một trong những nguyên nhân chính gây ra chất lượng không khí kém, đặc biệt vào giờ cao điểm."},
+{w:"asthma",s:"Cold air and pollen are common triggers for people who suffer from ___ , sometimes causing severe breathing attacks.",opts:["asthma", "paralysis", "pollutant", "combustion"],correct:0,exp:"asthma (n) = bệnh hen suyễn, một bệnh mãn tính về đường hô hấp. 'Cold air and pollen are common triggers... breathing attacks' mô tả chính xác các tác nhân gây cơn hen suyễn. Ba đáp án còn lại không phải là bệnh hô hấp liên quan đến hen suyễn.",emoji:"🫁💨",tip:"Lưu ý: trong danh sách từ vựng gốc, từ này đôi khi bị đánh máy nhầm thành 'ashma' — chính tả chuẩn tiếng Anh là 'asthma'.",trans:"Không khí lạnh và phấn hoa là những tác nhân phổ biến gây ra bệnh hen suyễn, đôi khi dẫn đến những cơn khó thở nghiêm trọng."},
+{w:"eliminate",s:"Installing a high-efficiency air filter can ___ up to 99% of dust particles from indoor air.",opts:["eliminate", "absorb", "diffuse", "penetrate"],correct:0,exp:"eliminate (v) = loại bỏ, loại trừ hoàn toàn. 'can ___ up to 99% of dust particles' cho thấy khả năng loại bỏ gần như hoàn toàn bụi — đúng nghĩa eliminate. 'absorb' (hấp thụ) mang nghĩa khác (giữ lại bên trong chứ không loại bỏ); 'diffuse' và 'penetrate' không hợp nghĩa.",emoji:"🚫🌬️",tip:"E (ra khỏi) + limin (ngưỡng cửa) → đẩy ra khỏi ngưỡng cửa, loại bỏ hoàn toàn.",trans:"Lắp đặt một bộ lọc không khí hiệu suất cao có thể loại bỏ tới 99% các hạt bụi trong không khí trong nhà."},
+{w:"stationary",s:"During the traffic jam, cars remained almost completely ___ for over an hour.",opts:["stationary", "sustainable", "stringent", "deplorable"],correct:0,exp:"stationary (adj) = đứng yên, không di chuyển. 'remained almost completely ___ for over an hour' mô tả các xe không nhúc nhích trong tắc đường — đúng nghĩa stationary. Ba đáp án còn lại không mang nghĩa 'đứng yên, không di chuyển'.",emoji:"🚗🛑",tip:"Đừng nhầm với 'stationery' (văn phòng phẩm) — 'stationAry' (có chữ A) mới là 'đứng yên'.",trans:"Trong lúc kẹt xe, các xe gần như đứng yên tại chỗ suốt hơn một giờ đồng hồ."},
+{w:"scrutiny",s:"After the accident, the airline's safety procedures came under intense public ___ .",opts:["scrutiny", "advent", "merit", "stringency"],correct:0,exp:"scrutiny (n) = sự giám sát, xem xét kỹ lưỡng, thường mang tính phê phán. 'came under intense public ___' = bị công chúng soi xét kỹ lưỡng — đúng nghĩa scrutiny. Ba đáp án còn lại không mang nghĩa 'sự giám sát, xem xét'.",emoji:"🔍👀",tip:"Scrutiny nghe giống 'scrutinize' (soi xét kỹ) → bị nhìn ngó, kiểm tra rất kỹ càng.",trans:"Sau vụ tai nạn, các quy trình an toàn của hãng hàng không đã bị công chúng giám sát chặt chẽ."},
+{w:"advent",s:"The ___ of the internet completely transformed the way people communicate and access information.",opts:["advent", "scrutiny", "merit", "stringency"],correct:0,exp:"advent (n) = sự ra đời, sự xuất hiện của một điều gì đó có ảnh hưởng lớn. 'completely transformed the way people communicate' cho thấy tầm ảnh hưởng lớn của sự xuất hiện internet — đúng nghĩa advent. Ba đáp án còn lại không mang nghĩa 'sự ra đời, xuất hiện'.",emoji:"💻🌟",tip:"Advent hay xuất hiện trong cụm 'the advent of technology' — sự xuất hiện mang tính bước ngoặt.",trans:"Sự ra đời của Internet đã hoàn toàn thay đổi cách con người giao tiếp và tiếp cận thông tin."},
+{w:"have merit",s:"Although unconventional, her proposal does ___ and deserves to be discussed at the next meeting.",opts:["have merit", "have scrutiny", "have stringency", "have advent"],correct:0,exp:"have merit (v) = có giá trị, xứng đáng được xem xét hoặc công nhận. 'deserves to be discussed at the next meeting' cho thấy đề xuất này có giá trị đáng cân nhắc — đúng nghĩa have merit. Ba đáp án còn lại không phải cụm cố định và không mang nghĩa 'có giá trị'.",emoji:"👍💡",tip:"Merit = 'giá trị, công trạng' → have merit là 'có điểm đáng giá', đáng được ghi nhận.",trans:"Mặc dù không theo lối thông thường, đề xuất của cô ấy vẫn có giá trị đáng xem xét và đáng được thảo luận trong cuộc họp tiếp theo."},
+{w:"deplorable",s:"The workers were forced to live in ___ conditions, with no clean water or proper sanitation.",opts:["deplorable", "sustainable", "stringent", "stationary"],correct:0,exp:"deplorable (adj) = tồi tệ, đáng chê trách, không thể chấp nhận được. 'no clean water or proper sanitation' mô tả điều kiện sống tồi tệ — đúng nghĩa deplorable. Ba đáp án còn lại không mang nghĩa tiêu cực tương tự.",emoji:"😞🏚️",tip:"Deplore = 'lên án, chê trách' → deplorable là điều đáng bị lên án vì quá tệ.",trans:"Các công nhân buộc phải sống trong những điều kiện tồi tệ đáng lên án, không có nước sạch hay vệ sinh đầy đủ."},
+{w:"absorb",s:"Dark surfaces ___ more heat from the sun than light-coloured ones, which is why black cars get hotter.",opts:["absorb", "eliminate", "diffuse", "penetrate"],correct:0,exp:"absorb (v) = hấp thụ, thu nhận vào bên trong (nhiệt, chất lỏng, kiến thức...). 'more heat from the sun... black cars get hotter' giải thích việc bề mặt tối hấp thụ nhiều nhiệt hơn — đúng nghĩa absorb. Ba đáp án còn lại không mang nghĩa 'hấp thụ'.",emoji:"☀️⬛",tip:"Nghĩ đến miếng bọt biển 'hút' nước vào bên trong — absorb là hút, thấm vào.",trans:"Các bề mặt tối hấp thụ nhiều nhiệt từ mặt trời hơn các bề mặt sáng màu, đó là lý do vì sao xe hơi màu đen nóng hơn."},
+{w:"sustainable",s:"The company switched to ___ packaging made from recycled materials to reduce its environmental impact.",opts:["sustainable", "deplorable", "stringent", "stationary"],correct:0,exp:"sustainable (adj) = bền vững, thân thiện với môi trường, có thể duy trì lâu dài mà không gây hại. 'made from recycled materials to reduce its environmental impact' mô tả một giải pháp thân thiện với môi trường — đúng nghĩa sustainable. Ba đáp án còn lại không liên quan đến tính bền vững môi trường.",emoji:"♻️🌱",tip:"Sustain = 'duy trì' → sustainable là có thể duy trì lâu dài mà không làm cạn kiệt tài nguyên.",trans:"Công ty đã chuyển sang sử dụng bao bì bền vững làm từ vật liệu tái chế để giảm tác động đến môi trường."},
+{w:"culprits",s:"Investigators eventually identified faulty wiring as the main ___ behind the warehouse fire.",opts:["culprits", "pollutants", "hallmarks", "doctrines"],correct:0,exp:"culprit(s) (n) = thủ phạm, nguyên nhân gây ra vấn đề. 'identified faulty wiring as the main ___ behind the warehouse fire' = xác định dây điện lỗi là nguyên nhân chính — đúng nghĩa culprit. Ba đáp án còn lại không mang nghĩa 'thủ phạm, nguyên nhân trực tiếp gây hại'.",emoji:"🕵️‍♀️🔥",tip:"Culprit hay dùng khi tìm ra 'kẻ chịu trách nhiệm' cho một vấn đề, sự cố.",trans:"Các nhà điều tra cuối cùng xác định dây điện bị lỗi là thủ phạm chính gây ra vụ cháy nhà kho."},
+{w:"stringent",s:"The new food safety regulations are far more ___ than the previous ones, requiring frequent inspections.",opts:["stringent", "deplorable", "sustainable", "stationary"],correct:0,exp:"stringent (adj) = nghiêm ngặt, khắt khe. 'requiring frequent inspections' cho thấy quy định rất chặt chẽ, khắt khe — đúng nghĩa stringent. Ba đáp án còn lại không mang nghĩa 'nghiêm ngặt'.",emoji:"📏🔒",tip:"Stringent nghe giống 'strict' — cả hai đều mang nghĩa nghiêm khắc, chặt chẽ.",trans:"Các quy định an toàn thực phẩm mới nghiêm ngặt hơn nhiều so với các quy định trước đây, yêu cầu kiểm tra thường xuyên."},
+{w:"wither",s:"Without enough water, the plants in the garden began to ___ within just a few days.",opts:["wither", "flourish", "cultivate", "diffuse"],correct:0,exp:"wither (v) = khô héo, teo tóp lại, thường dùng cho cây cối. 'Without enough water... began to ___' mô tả cây héo đi vì thiếu nước — đúng nghĩa wither. 'flourish' (phát triển tươi tốt) trái nghĩa hoàn toàn; 'cultivate' và 'diffuse' không hợp nghĩa.",emoji:"🥀",tip:"Cây 'wither' dần theo thời gian khi thiếu nước và sự chăm sóc, khô héo từng chút một.",trans:"Không có đủ nước, những cây trong khu vườn bắt đầu héo úa chỉ trong vài ngày."},
+{w:"stride",s:"The country has made great ___ in reducing poverty over the past two decades.",opts:["strides", "scrutinies", "merits", "advents"],correct:0,exp:"stride(s) (n) = bước tiến, sự tiến bộ đáng kể. 'made great ___ in reducing poverty' = đạt được những bước tiến lớn trong việc giảm nghèo — đúng nghĩa stride. Ba đáp án còn lại không mang nghĩa 'bước tiến, sự tiến bộ'.",emoji:"👣📈",tip:"Stride nghĩa đen là 'sải chân bước dài' → nghĩa bóng là những bước tiến lớn, đáng kể.",trans:"Đất nước đã đạt được những bước tiến lớn trong việc giảm nghèo trong hai thập kỷ qua."},
+{w:"aggregate",s:"The report presents ___ data for the entire country rather than breaking it down by individual region.",opts:["aggregate", "stringent", "sustainable", "deplorable"],correct:0,exp:"aggregate (adj) = tổng, gộp chung lại (số liệu). 'presents ___ data for the entire country rather than breaking it down by individual region' cho thấy dữ liệu được gộp chung, không chia nhỏ — đúng nghĩa aggregate. Ba đáp án còn lại không mang nghĩa 'tổng hợp, gộp chung'.",emoji:"📊➕",tip:"Aggregate liên quan đến 'gather' (tập hợp lại) → gộp tất cả số liệu nhỏ thành một con số tổng.",trans:"Báo cáo trình bày dữ liệu tổng hợp cho toàn bộ đất nước thay vì phân tách theo từng khu vực riêng lẻ."},
+{w:"fine particulate",s:"Unlike larger dust particles, ___ can stay suspended in the air for days and travel hundreds of kilometres.",opts:["fine particulate", "aggregate data", "vehicular pollution", "respiratory failure"],correct:0,exp:"fine particulate (n) = hạt bụi mịn, kích thước cực nhỏ, dễ lơ lửng lâu trong không khí. 'can stay suspended in the air for days and travel hundreds of kilometres' mô tả đặc tính của các hạt bụi siêu mịn — đúng nghĩa fine particulate. Ba đáp án còn lại không mô tả đúng đặc tính 'hạt mịn lơ lửng lâu'.",emoji:"🌫️🔬",tip:"Fine ở đây nghĩa là 'mịn, nhỏ li ti' (không phải 'ổn') — hạt mịn đến mức bay lơ lửng rất lâu.",trans:"Không giống như các hạt bụi lớn hơn, bụi mịn có thể lơ lửng trong không khí nhiều ngày và di chuyển hàng trăm kilômét."},
+{w:"plagued",s:"The construction project was ___ by delays, budget overruns, and constant disputes between contractors.",opts:["plagued", "flourished", "cultivated", "diffused"],correct:0,exp:"plagued (adj, quá khứ phân từ của 'plague') = bị ảnh hưởng nghiêm trọng, liên tục gặp rắc rối bởi điều gì đó. 'by delays, budget overruns, and constant disputes' liệt kê hàng loạt vấn đề đeo bám dự án — đúng nghĩa plagued. Ba đáp án còn lại mang nghĩa tích cực hoặc trung tính, không hợp ngữ cảnh.",emoji:"😩📉",tip:"Plague nghĩa là 'bệnh dịch' → plagued by = bị 'bủa vây' bởi hàng loạt vấn đề như một trận dịch.",trans:"Dự án xây dựng liên tục gặp khó khăn vì chậm tiến độ, vượt ngân sách và tranh chấp không ngừng giữa các nhà thầu."},
+{w:"filtration",s:"The city's new water treatment plant uses advanced ___ to remove bacteria and harmful chemicals.",opts:["filtration", "combustion", "diffusion", "penetration"],correct:0,exp:"filtration (n) = sự lọc, quá trình loại bỏ tạp chất bằng cách cho đi qua một vật liệu lọc. 'to remove bacteria and harmful chemicals' mô tả mục đích của quá trình lọc — đúng nghĩa filtration. Ba đáp án còn lại không liên quan đến việc lọc bỏ tạp chất.",emoji:"💧🧪",tip:"Filtration liên quan đến 'filter' (bộ lọc) → quá trình cho một thứ đi qua bộ lọc để làm sạch.",trans:"Nhà máy xử lý nước mới của thành phố sử dụng công nghệ lọc tiên tiến để loại bỏ vi khuẩn và hóa chất độc hại."},
+{w:"conventional",s:"Instead of using ___ medicine, she decided to try acupuncture and other alternative therapies.",opts:["conventional", "sustainable", "stringent", "aggregate"],correct:0,exp:"conventional (adj) = truyền thống, thông thường, theo cách phổ biến lâu nay. 'Instead of using ___ medicine, she decided to try... alternative therapies' đối lập giữa y học truyền thống và các liệu pháp thay thế — đúng nghĩa conventional. Ba đáp án còn lại không mang nghĩa 'truyền thống, thông thường'.",emoji:"💊🏥",tip:"Convention = 'quy ước, thông lệ' → conventional là cái theo đúng thông lệ, không có gì mới lạ.",trans:"Thay vì dùng y học truyền thống (chính thống), cô ấy quyết định thử châm cứu và các liệu pháp thay thế khác."},
+{w:"scalable",s:"The startup built a highly ___ platform that could handle ten users or ten million without major changes.",opts:["scalable", "conventional", "stringent", "stationary"],correct:0,exp:"scalable (adj) = có thể mở rộng quy mô dễ dàng khi nhu cầu tăng lên. 'could handle ten users or ten million without major changes' mô tả khả năng mở rộng quy mô linh hoạt — đúng nghĩa scalable. Ba đáp án còn lại không mang nghĩa 'có thể mở rộng quy mô'.",emoji:"📈💻",tip:"Scale = 'quy mô' → scalable là có thể thay đổi quy mô một cách dễ dàng, linh hoạt.",trans:"Công ty khởi nghiệp đã xây dựng một nền tảng có khả năng mở rộng cao, có thể phục vụ mười người dùng hay mười triệu người dùng mà không cần thay đổi lớn."},
+{w:"potential",s:"The coach immediately recognised the young player's ___ , even though he had never had any formal training.",opts:["potential", "merit", "scrutiny", "advent"],correct:0,exp:"potential (n) = tiềm năng, khả năng phát triển trong tương lai. 'even though he had never had any formal training' cho thấy khả năng vốn có, chưa được bộc lộ hết — đúng nghĩa potential. Ba đáp án còn lại không mang nghĩa 'tiềm năng phát triển'.",emoji:"🌟⚽",tip:"Potential là những gì 'có thể trở thành' trong tương lai, dù hiện tại chưa bộc lộ hết.",trans:"Huấn luyện viên ngay lập tức nhận ra tiềm năng của cầu thủ trẻ này, dù cậu ấy chưa từng được đào tạo bài bản."},
+{w:"empirically",s:"The theory sounded convincing, but it had never been tested ___ in a real laboratory setting.",opts:["empirically", "conventionally", "aggregately", "stringently"],correct:0,exp:"empirically (adv) = dựa trên quan sát, thực nghiệm thực tế, chứ không chỉ trên lý thuyết. 'never been tested ___ in a real laboratory setting' = chưa từng được kiểm chứng bằng thực nghiệm — đúng nghĩa empirically. Ba đáp án còn lại không mang nghĩa 'bằng thực nghiệm, quan sát thực tế'.",emoji:"🔬📐",tip:"Empirical liên quan đến 'experience, experiment' → dựa trên trải nghiệm, thực nghiệm thực tế, không chỉ lý thuyết suông.",trans:"Lý thuyết này nghe có vẻ thuyết phục, nhưng nó chưa bao giờ được kiểm chứng thực nghiệm trong một phòng thí nghiệm thực sự."}
+];
+const CHAPTER3_WORDS = CHAPTER3_DATA;
+
+const CHAPTER2_WORDS = CHAPTER2_DATA;
+
+const ALL_WORDS = CHAPTER1_WORDS.concat(CHAPTER2_WORDS, CHAPTER3_WORDS);
+const TARGET_PER_CHAPTER = 30; // mỗi chương sẽ đầy 30 từ khi soạn xong toàn bộ 150 từ
+const N_CHAPTERS = 5;
+const perNow = Math.ceil(ALL_WORDS.length / N_CHAPTERS);
+const CHAPTERS = [];
+for(let i=0;i<N_CHAPTERS;i++){
+  CHAPTERS.push({
+    id:i+1, label:'Chương '+(i+1), color:PALETTE[i%PALETTE.length],
+    words:ALL_WORDS.slice(i*perNow, (i+1)*perNow), locked:false
+  });
+}
+const POOL = ALL_WORDS;
+
+let testQuestions = [], idx = 0, testInProgress = false, chosenSize = 25;
+let flashIdx = 0, currentChapter = null;
+
+const quizArea = document.getElementById('quizArea');
+const navGrid = document.getElementById('navGrid');
+const tabStudy = document.getElementById('tabStudy');
+const tabQuiz = document.getElementById('tabQuiz');
+const studyWrap = document.getElementById('studyWrap');
+const quizWrap = document.getElementById('quizWrap');
+const startScreen = document.getElementById('startScreen');
+const testScreen = document.getElementById('testScreen');
+const flashcard = document.getElementById('flashcard');
+const flashCount = document.getElementById('flashCount');
+const totalCount = document.getElementById('totalCount');
+
+let answers = [];
+
+function colorFor(i){ return PALETTE[i % PALETTE.length]; }
+function hexToRgba(hex, a){
+  const v = hex.replace('#','');
+  const r = parseInt(v.substring(0,2),16), g = parseInt(v.substring(2,4),16), b = parseInt(v.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function generateTest(size){
+  const n = Math.min(size, POOL.length);
+  const pickedIdx = shuffle(POOL.map((_,i)=>i)).slice(0, n);
+  testQuestions = pickedIdx.map(pi=>{
+    const src = POOL[pi];
+    const order = shuffle(src.opts.map((_,i)=>i));
+    const newOpts = order.map(i=>src.opts[i]);
+    const newCorrect = order.indexOf(src.correct);
+    return { w:src.w, s:src.s, opts:newOpts, correct:newCorrect, exp:src.exp, emoji:src.emoji, tip:src.tip, trans:src.trans, part:'Part 1' };
+  });
+  answers = new Array(testQuestions.length).fill(null);
+  idx = 0;
+}
+
+function renderStartScreen(){
+  startScreen.innerHTML = `
+    <div class="startcard">
+      <div class="partlabel">🎲 Random trong kho ${POOL.length}/150 từ — không phân biệt chương</div>
+      <div class="starticon">🎲</div>
+      <h2>Bắt đầu bài kiểm tra mới</h2>
+      <p>Mỗi lượt thi, câu hỏi sẽ được <b>xáo trộn ngẫu nhiên</b> — cả thứ tự câu lẫn thứ tự đáp án A/B/C/D — nên không lượt nào giống lượt nào. Trong lúc thi, bạn <b>không thể quay lại xem thẻ từ vựng</b>, đúng như một bài thi thật.</p>
+      <div class="sizepick" id="sizePick">
+        ${Array.from(new Set([25,50,75,100,125,150].filter(n=>n<=POOL.length).concat(POOL.length>=25?[POOL.length]:[]))).sort((a,b)=>a-b).map(n=>`<button class="sizebtn ${n===chosenSize?'active':''}" data-n="${n}">${n} câu</button>`).join('')}
+      </div>
+      <button class="startgo" id="startGoBtn">🚀 Bắt đầu bài kiểm tra</button>
+    </div>`;
+  startScreen.querySelectorAll('.sizebtn').forEach(b=>{
+    b.onclick = ()=>{
+      chosenSize = parseInt(b.dataset.n);
+      startScreen.querySelectorAll('.sizebtn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    };
+  });
+  document.getElementById('startGoBtn').onclick = beginTest;
+}
+
+function beginTest(){
+  generateTest(chosenSize);
+  testInProgress = true;
+  totalCount.textContent = testQuestions.length;
+  lockStudyTab(true);
+  startScreen.style.display = 'none';
+  testScreen.style.display = 'block';
+  renderQuiz();
+}
+
+function lockStudyTab(locked){
+  tabStudy.classList.toggle('locked', locked);
+}
+
+function updateScorebar(){
+  const done = answers.filter(a=>a!==null).length;
+  const correct = answers.filter(a=>a===true).length;
+  const wrong = answers.filter(a=>a===false).length;
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('wrongCount').textContent = wrong;
+}
+
+function buildNavGrid(){
+  navGrid.innerHTML = testQuestions.map((q,i)=>{
+    let cls = 'navcell';
+    if(i===idx) cls += ' current';
+    if(answers[i]===true) cls += ' correct';
+    if(answers[i]===false) cls += ' wrong';
+    return `<div class="${cls}" data-i="${i}">${i+1}</div>`;
+  }).join('');
+  navGrid.querySelectorAll('.navcell').forEach(c=>{
+    c.addEventListener('click', ()=>{ idx = parseInt(c.dataset.i); renderQuiz(); });
+  });
+}
+
+function renderQuiz(){
+  buildNavGrid();
+  updateScorebar();
+  if(idx >= testQuestions.length){ renderResults(); return; }
+  const q = testQuestions[idx];
+  const c = colorFor(idx);
+  const already = answers[idx] !== null;
+  const optsHtml = q.opts.map((o,i)=>{
+    const letter = String.fromCharCode(65+i);
+    return `<button class="opt" data-i="${i}"><span class="letter">${letter}</span><span>${o}</span></button>`;
+  }).join('');
+  quizArea.innerHTML = `
+    <div class="qcard">
+      <div class="qhead">
+        <div class="qnum-badge" style="background:${c};">${idx+1}</div>
+        <div class="qhint">Chọn từ phù hợp nhất để hoàn thành câu ${q.emoji}</div>
+      </div>
+      <p class="sentence">${q.s.replace('___', `<span class="blank" style="background:${hexToRgba(c,.16)}; color:${c};">＿＿＿</span>`)}</p>
+      <div class="options">${optsHtml}</div>
+      <div class="explain" id="explainBox"></div>
+      <div class="actions">
+        <button class="navbtn" id="prevBtn" ${idx===0?'disabled':''}>← Câu trước</button>
+        <button class="next" id="nextBtn">Câu tiếp theo →</button>
+      </div>
+    </div>`;
+  document.getElementById('prevBtn').onclick = ()=>{ idx = Math.max(0, idx-1); renderQuiz(); };
+  if(already){
+    revealAnswer(q, null, true);
+  } else {
+    document.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>onAnswer(parseInt(btn.dataset.i)));
+    });
+  }
+}
+
+function onAnswer(choice){
+  const q = testQuestions[idx];
+  const correct = choice === q.correct;
+  answers[idx] = correct;
+  revealAnswer(q, choice, false);
+  buildNavGrid();
+  updateScorebar();
+}
+
+const POS_LABEL = {n:'Danh từ', v:'Động từ', adj:'Tính từ', adv:'Trạng từ', a:'Tính từ'};
+
+function buildExplainBody(q){
+  const posMatch = q.exp.match(/\(([a-z]{1,4})\)/i);
+  const posTag = posMatch ? POS_LABEL[posMatch[1].toLowerCase()] : null;
+  const fullSentence = q.s.replace('___', `<b class="hlword">${q.opts[q.correct]}</b>`);
+  // split explanation into digestible sentences
+  const rawParts = q.exp.split(/(?<=[.!?])\s+(?=[A-ZĐ'"])/).map(x=>x.trim()).filter(Boolean);
+  const badWords = ['không hợp','sai nghĩa','trái nghĩa','không liên quan','không phù hợp','không đi','không diễn tả','không tự nhiên','đều sai','đều không','sai vị trí','sai hoàn toàn','thiếu sắc thái','mang nghĩa ngược','nghĩa ngược','gần nghĩa nhưng'];
+  const lines = rawParts.map((sent,i)=>{
+    const isDistractor = badWords.some(w=>sent.toLowerCase().includes(w));
+    const icon = i===0 ? '📖' : (isDistractor ? '🔍' : '✅');
+    const label = i===0 ? 'Nghĩa của từ' : (isDistractor ? 'Phân biệt với đáp án khác' : 'Vì sao hợp ngữ cảnh');
+    return `<div class="exp-line"><span class="exp-icon">${icon}</span><div><span class="exp-label">${label}</span><div>${sent}</div></div></div>`;
+  }).join('');
+  return `
+    <div class="explain-body">
+      <div class="full-sentence-box">
+        <div class="fs-label">📝 Câu hoàn chỉnh${posTag ? ' · <span class="postag">'+posTag+'</span>' : ''}</div>
+        <div class="fs-text">${fullSentence}</div>
+      </div>
+      <div class="exp-sections">${lines}</div>
+      ${q.trans ? `<div class="trans-box"><div class="fs-label">🇻🇳 Dịch nghĩa cả câu</div><div class="fs-text trans-text">${q.trans}</div></div>` : ''}
+      <div class="tip-box"><span class="tipicon">💡</span><span><b>Mẹo nhớ nhanh:</b> ${q.tip}</span></div>
+    </div>`;
+}
+
+function revealAnswer(q, choice, isReplay){
+  const buttons = document.querySelectorAll('.opt');
+  buttons.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === q.correct){
+      b.classList.add('correct');
+      b.insertAdjacentHTML('beforeend', '<span class="mark correct">🎉</span>');
+    }
+    if(!isReplay && i === choice && choice !== q.correct){
+      b.classList.add('wrong');
+      b.insertAdjacentHTML('beforeend', '<span class="mark wrong">💥</span>');
+    }
+  });
+  const correctChoice = isReplay ? answers[idx] : (choice === q.correct);
+  const box = document.getElementById('explainBox');
+  box.classList.add('show', correctChoice ? 'right-verdict' : 'wrong-verdict');
+  box.innerHTML = `
+    <div class="explain-top">
+      <div class="explain-emoji">${q.emoji}</div>
+      <div>
+        <div class="verdict">${correctChoice ? 'Chính xác, quá đỉnh!' : 'Chưa đúng — đáp án là "'+q.opts[q.correct]+'"'}</div>
+        <div class="wordtag">${q.w}</div>
+      </div>
+    </div>
+    ${buildExplainBody(q)}`;
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.classList.add('show');
+  nextBtn.onclick = ()=>{ idx++; renderQuiz(); };
+}
+
+function renderResults(){
+  testInProgress = false;
+  lockStudyTab(false);
+  const correct = answers.filter(a=>a===true).length;
+  const total = testQuestions.length;
+  const pct = Math.round(correct/total*100);
+  let stampClass = 'low', stampText = '💪 Cần ôn thêm';
+  if(pct >= 85){ stampClass=''; stampText='🏆 Xuất sắc!'; }
+  else if(pct >= 65){ stampClass='mid'; stampText='🌟 Khá tốt!'; }
+  const missed = testQuestions.map((q,i)=>({q,i})).filter(x=>answers[x.i]===false);
+  const missedHtml = missed.length ? `
+    <div class="missed-list">
+      <h3>📌 Những từ cần ôn lại (${missed.length})</h3>
+      ${missed.map(x=>`<div class="missed-item">${x.q.emoji} <b>${x.q.w}</b> — câu ${x.i+1}: "${x.q.s.replace('___', x.q.opts[x.q.correct])}"</div>`).join('')}
+    </div>` : `<div class="batchnote">🎉 Không có từ nào cần ôn lại — quá đỉnh!</div>`;
+  quizArea.innerHTML = `
+    <div class="done">
+      <div class="resultcard">
+        <div class="qhint">KẾT QUẢ BÀI THI ĐẤU</div>
+        <div class="bigscore">${correct}/${total}</div>
+        <div class="pct">Tỉ lệ đúng: ${pct}%</div>
+        <div class="grade-stamp ${stampClass}">${stampText}</div>
+        <div class="resultbtns">
+          <button class="btn-primary" id="restartBtn">🎲 Bài kiểm tra mới (ngẫu nhiên)</button>
+          <button class="btn-ghost" id="reviewMissedBtn" ${missed.length? '' : 'disabled'}>📖 Ôn lại từ sai</button>
+        </div>
+        ${missedHtml}
+        <div class="batchnote">Kho hiện có 80/150 từ (Chương 1–2). Nhắn "tiếp tục" trong khung chat để mở khóa Chương 3–4 (81–150), giúp các bài kiểm tra ngẫu nhiên hơn nữa.</div>
+      </div>
+    </div>`;
+  document.getElementById('restartBtn').onclick = ()=>{
+    testScreen.style.display = 'none';
+    startScreen.style.display = 'block';
+    renderStartScreen();
+  };
+  if(missed.length){
+    document.getElementById('reviewMissedBtn').onclick = ()=>{ idx = missed[0].i; testInProgress = true; lockStudyTab(true); renderQuiz(); };
+  }
+}
+
+function renderChapterPicker(){
+  const chapterPicker = document.getElementById('chapterPicker');
+  chapterPicker.innerHTML = `
+    <div class="studypicker-intro">Cả 5 chương đều học được ngay — bấm vào chương bất kỳ để xem từng thẻ từ 📇 (mỗi chương sẽ đầy 30 từ khi mình soạn xong toàn bộ 150 từ)</div>
+    <div class="chapter-grid">
+      ${CHAPTERS.map(ch=>`
+        <button class="chapter-card" style="background:${ch.color};" data-id="${ch.id}">
+          <div class="chapter-num">${ch.id}</div>
+          <div class="chapter-info">
+            <div class="chapter-title">${ch.label}</div>
+            <div class="chapter-range">${ch.words.length}/${TARGET_PER_CHAPTER} từ</div>
+          </div>
+          <div class="chapter-status">📖 Học ngay</div>
+        </button>`).join('')}
+    </div>`;
+  chapterPicker.querySelectorAll('.chapter-card').forEach(btn=>{
+    btn.onclick = ()=>{
+      currentChapter = CHAPTERS.find(c=>c.id===parseInt(btn.dataset.id));
+      flashIdx = 0;
+      document.getElementById('chapterPicker').style.display = 'none';
+      document.getElementById('flashSection').style.display = 'block';
+      renderFlash();
+    };
+  });
+}
+
+document.getElementById('backToChapters').onclick = ()=>{
+  document.getElementById('flashSection').style.display = 'none';
+  document.getElementById('chapterPicker').style.display = 'block';
+};
+
+function renderFlash(){
+  const words = currentChapter.words;
+  const q = words[flashIdx];
+  const c = currentChapter.color;
+  const posMatch = q.exp.match(/\(([a-z]{1,4})\)/i);
+  const pos = posMatch ? posMatch[1] : '';
+  const defMatch = q.exp.split('.')[0].replace(/^[a-zA-Z\- ]+\([a-z]+\)\s*=\s*/,'');
+  flashcard.style.background = `linear-gradient(135deg, ${c}, ${colorFor(flashIdx+2)})`;
+  flashcard.innerHTML = `
+    <div class="flash-emoji">${q.emoji}</div>
+    <div class="flash-pos">${pos ? pos.toUpperCase() : ''}</div>
+    <div class="flash-word">${q.w}</div>
+    <div class="flash-def">${defMatch}</div>
+    <div class="flash-ex">${q.s.replace('___', '<b>'+q.opts[q.correct]+'</b>')}</div>`;
+  flashCount.textContent = `${flashIdx+1} / ${words.length}`;
+  document.getElementById('flashPrev').disabled = flashIdx===0;
+  document.getElementById('flashNext').textContent = flashIdx===words.length-1 ? 'Vào thi đấu →' : 'Tiếp →';
+}
+
+document.getElementById('flashPrev').onclick = ()=>{ flashIdx=Math.max(0,flashIdx-1); renderFlash(); };
+document.getElementById('flashNext').onclick = ()=>{
+  if(flashIdx===currentChapter.words.length-1){ switchMode('quiz'); return; }
+  flashIdx++; renderFlash();
+};
+
+function switchMode(m){
+  if(m==='study' && testInProgress) return; // locked during solo test
+  tabStudy.classList.toggle('active', m==='study');
+  tabQuiz.classList.toggle('active', m==='quiz');
+  tabMulti.classList.toggle('active', m==='multi');
+  studyWrap.classList.toggle('show', m==='study');
+  quizWrap.style.display = m==='quiz' ? 'block' : 'none';
+  multiWrap.style.display = m==='multi' ? 'block' : 'none';
+  if(m==='quiz' && testScreen.style.display==='none' && !testInProgress) renderStartScreen();
+}
+tabStudy.onclick = ()=>switchMode('study');
+tabQuiz.onclick = ()=>switchMode('quiz');
+const tabMulti = document.getElementById('tabMulti');
+tabMulti.onclick = ()=>switchMode('multi');
+
+/* ================= ĐẤU BẠN BÈ (P2P qua WebRTC / PeerJS) ================= */
+const mpHome = document.getElementById('mpHome');
+const mpLobby = document.getElementById('mpLobby');
+const mpBattle = document.getElementById('mpBattle');
+const multiWrap = document.getElementById('multiWrap');
+const lbPanel = document.getElementById('lbPanel');
+const mpQuizArea = document.getElementById('mpQuizArea');
+
+/* Trang này được host tĩnh (vd. GitHub Pages) nên không có server riêng để lưu trạng thái
+   phòng đấu. Vì vậy phòng đấu bạn bè được nối TRỰC TIẾP giữa các trình duyệt bằng WebRTC
+   (qua thư viện PeerJS) — máy chủ tín hiệu miễn phí của peerjs.com chỉ giúp 2 máy "làm quen"
+   nhau lúc đầu, sau đó dữ liệu (điểm số, chat...) đi thẳng máy này sang máy kia, không lưu ở
+   đâu cả. Người tạo phòng đóng vai trò máy chủ trung tâm (host); người vào sau kết nối tới
+   host, và host chuyển tiếp trạng thái/chat cho tất cả mọi người trong phòng.
+   Lưu ý: nếu mạng của ai đó chặn kết nối P2P/WebRTC (một số mạng công ty, trường học, VPN),
+   việc tạo hoặc vào phòng có thể không thành công — hãy thử đổi sang mạng khác (wifi nhà, 4G). */
+class RoomP2P{
+  constructor(){
+    this.peer = null;
+    this.isHost = false;
+    this.hostId = null;
+    this.myId = null;
+    this.conns = {};
+    this.myPresence = null;
+    this.remotePresences = {};
+    this.chatHandlers = [];
+    this.peersHandlers = [];
+    this.localStream = null;
+    this.mediaConns = {};
+    this._callSig = {};
+    this.streamHandlers = [];
+    this.speakingHandlers = [];
+    this.callStateHandlers = [];
+    this._analysers = {};
+    this._audioCtx = null;
+    this._retryTimers = {};
+  }
+  _createPeer(id){
+    return new Promise((resolve,reject)=>{
+      let done = false;
+      this.peer = new Peer(id, {
+        debug:0,
+        config:{
+          iceCandidatePoolSize:6,
+          iceServers:[
+          {urls:'stun:stun.l.google.com:19302'},
+          {urls:'stun:stun1.l.google.com:19302'},
+          {urls:'stun:global.stun.twilio.com:3478'},
+          /* TURN dự phòng — bắt buộc để 2 máy KHÁC mạng nhau (vd. 1 người wifi nhà,
+             1 người 4G/5G) vẫn nối được với nhau. Mạng di động (4G/5G) hầu như luôn
+             dùng "symmetric NAT" nên STUN một mình không đủ — bắt buộc phải có TURN
+             relay thì mới xuyên NAT được, giống hạ tầng Google Meet/Zoom luôn có TURN
+             dự phòng. Dùng NHIỀU nhà cung cấp TURN miễn phí khác nhau cùng lúc để nếu
+             một bên bị quá tải/tạm ngưng thì vẫn còn đường khác — trình duyệt tự chọn
+             đường nào nối được. */
+          {urls:'turn:openrelay.metered.ca:80', username:'openrelayproject', credential:'openrelayproject'},
+          {urls:'turn:openrelay.metered.ca:443', username:'openrelayproject', credential:'openrelayproject'},
+          {urls:'turn:openrelay.metered.ca:443?transport=tcp', username:'openrelayproject', credential:'openrelayproject'},
+          {urls:'stun:freestun.net:3478'},
+          {urls:'turn:freestun.net:3478', username:'free', credential:'free'},
+          {urls:'turn:turn.anyfirewall.com:443?transport=tcp', username:'webrtc', credential:'webrtc'}
+        ]}
+      });
+      this.peer.on('open', ()=>{ if(!done){ done=true; resolve(); } });
+      this.peer.on('error', (e)=>{ if(!done){ done=true; reject(e); } });
+      this.peer.on('call', (call)=>{ this._handleIncomingCall(call); });
+      setTimeout(()=>{ if(!done){ done=true; reject(new Error('timeout')); } }, 9000);
+    });
+  }
+  /* ---- voice chat (mic) — direct WebRTC audio call giữa từng cặp máy ----
+     Để tránh 2 bên cùng gọi nhau (tạo 2 kết nối trùng, gây vọng/không nghe được),
+     chỉ 1 bên trong mỗi cặp đóng vai "người gọi" (id nhỏ hơn theo thứ tự chữ cái),
+     và bên đó sẽ tự động gọi lại (đóng kết nối cũ, mở kết nối mới kèm stream mới
+     nhất) mỗi khi trạng thái mic của 1 trong 2 bên thay đổi — nhờ vậy stream luôn
+     được gửi đúng 2 chiều bất kể ai bật mic trước. */
+  _emptyStream(){
+    if(!this._emptyMS){ try{ this._emptyMS = new MediaStream(); }catch(e){ this._emptyMS = null; } }
+    return this._emptyMS;
+  }
+  async enableMic(){
+    if(this.localStream){
+      /* Lần bật mic TRƯỚC đã tạo sẵn stream rồi; lần tắt mic chỉ vô hiệu hóa
+         track (t.enabled=false) chứ không hủy stream, nên ở đây phải bật lại
+         track — nếu không, tắt/bật mic vài lần sẽ bị câm tiếng vĩnh viễn dù
+         nút vẫn hiển thị "đang bật mic". */
+      this.localStream.getAudioTracks().forEach(t=>{ t.enabled = true; });
+      this._watchSpeaking(this.myId, this.localStream);
+      this.syncCalls();
+      return true;
+    }
+    try{
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        audio:{
+          echoCancellation:true,   /* khử tiếng vọng — giống Google Meet */
+          noiseSuppression:true,   /* khử tiếng ồn nền */
+          autoGainControl:true,    /* tự cân bằng âm lượng giọng nói */
+          channelCount:1
+        },
+        video:false
+      });
+    }catch(e){ return false; }
+    this._watchSpeaking(this.myId, this.localStream);
+    this.syncCalls();
+    return true;
+  }
+  setMicEnabled(on){
+    if(this.localStream) this.localStream.getAudioTracks().forEach(t=>{ t.enabled = on; });
+    if(!on) this._fireSpeaking(this.myId, false);
+  }
+  stopMic(){
+    if(this.localStream){ try{ this.localStream.getTracks().forEach(t=>t.stop()); }catch(e){} this.localStream = null; }
+    this._stopWatchSpeaking(this.myId);
+    Object.values(this._retryTimers).forEach(t=>clearTimeout(t));
+    this._retryTimers = {};
+    Object.values(this.mediaConns).forEach(c=>{ try{ c.close(); }catch(e){} });
+    this.mediaConns = {}; this._callSig = {};
+  }
+  /* ---- phát hiện "đang nói" bằng Web Audio API (mức âm lượng), để hiện
+     hiệu ứng viền xanh nhấp nháy quanh tên người đang nói, giống Google Meet ---- */
+  _ensureAudioCtx(){
+    if(!this._audioCtx){
+      try{ this._audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ this._audioCtx = null; }
+    }
+    /* Trên iPhone/iPad (Safari), AudioContext luôn bị tạo ở trạng thái "suspended"
+       cho tới khi có thao tác chạm của người dùng — resume() ngay ở đây (hàm này
+       luôn được gọi ngay trong lúc xử lý cú bấm nút Bật mic, tức đã có gesture)
+       để việc phát hiện "đang nói" hoạt động trên điện thoại, không riêng laptop. */
+    if(this._audioCtx && this._audioCtx.state === 'suspended'){
+      try{ this._audioCtx.resume(); }catch(e){}
+    }
+    return this._audioCtx;
+  }
+  _watchSpeaking(peerId, stream){
+    this._stopWatchSpeaking(peerId);
+    const ctx = this._ensureAudioCtx();
+    if(!ctx || !stream || !stream.getAudioTracks().length) return;
+    try{
+      const src = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512; analyser.smoothingTimeConstant = 0.6;
+      src.connect(analyser);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      let speaking = false, quietFrames = 0, raf = null;
+      const tick = ()=>{
+        analyser.getByteFrequencyData(data);
+        let sum=0; for(let i=0;i<data.length;i++) sum+=data[i];
+        const loud = (sum/data.length) > 12;
+        if(loud){ quietFrames = 0; if(!speaking){ speaking = true; this._fireSpeaking(peerId, true); } }
+        else if(speaking && ++quietFrames > 10){ speaking = false; this._fireSpeaking(peerId, false); }
+        raf = requestAnimationFrame(tick);
+        this._analysers[peerId].raf = raf;
+      };
+      this._analysers[peerId] = {src, raf:null};
+      tick();
+    }catch(e){}
+  }
+  _stopWatchSpeaking(peerId){
+    const a = this._analysers[peerId];
+    if(a){ if(a.raf) cancelAnimationFrame(a.raf); try{ a.src.disconnect(); }catch(e){} delete this._analysers[peerId]; }
+  }
+  _fireSpeaking(peerId, on){ this.speakingHandlers.forEach(cb=>{ try{ cb(peerId, on); }catch(e){} }); }
+  onSpeaking(cb){ this.speakingHandlers.push(cb); return ()=>{ this.speakingHandlers = this.speakingHandlers.filter(f=>f!==cb); }; }
+  _fireCallState(peerId, state){ this.callStateHandlers.forEach(cb=>{ try{ cb(peerId, state); }catch(e){} }); }
+  onCallState(cb){ this.callStateHandlers.push(cb); return ()=>{ this.callStateHandlers = this.callStateHandlers.filter(f=>f!==cb); }; }
+  /* Theo dõi trạng thái ICE của 1 cuộc gọi thoại; nếu rớt (failed/disconnected)
+     thì tự động dựng lại kết nối sau một khoảng ngắn — giống cơ chế tự nối lại
+     của Google Meet khi mạng chập chờn. */
+  _watchIceState(peerId, call){
+    const pc = call.peerConnection;
+    if(!pc) return;
+    const onChange = ()=>{
+      const state = pc.iceConnectionState;
+      if(state==='connected' || state==='completed'){
+        this._fireCallState(peerId, 'ok');
+        if(this._retryTimers[peerId]){ clearTimeout(this._retryTimers[peerId]); delete this._retryTimers[peerId]; }
+      } else if(state==='failed' || state==='disconnected'){
+        this._fireCallState(peerId, 'reconnecting');
+        if(!this._retryTimers[peerId]){
+          this._retryTimers[peerId] = setTimeout(()=>{
+            delete this._retryTimers[peerId];
+            if(this.mediaConns[peerId]===call){ this._callSig[peerId] = null; this.syncCalls(); }
+          }, 1500);
+        }
+      }
+    };
+    pc.addEventListener('iceconnectionstatechange', onChange);
+  }
+  /* Gọi lại / dựng lại cuộc gọi thoại với từng người trong phòng, chỉ khi cần
+     (trạng thái mic của tôi hoặc của họ vừa đổi, hoặc chưa có kết nối). */
+  syncCalls(){
+    if(!this.peer) return;
+    const myHas = !!this.localStream;
+    Object.keys(this.remotePresences).filter(id=>id!==this.myId).forEach(peerId=>{
+      const iAmCaller = this.myId < peerId; // đúng 1 trong 2 bên là caller
+      if(!iAmCaller) return;
+      const theirsWant = !!(this.remotePresences[peerId] && this.remotePresences[peerId].micOn);
+      if(!myHas && !theirsWant){
+        if(this.mediaConns[peerId]){ try{ this.mediaConns[peerId].close(); }catch(e){} delete this.mediaConns[peerId]; }
+        if(this._retryTimers[peerId]){ clearTimeout(this._retryTimers[peerId]); delete this._retryTimers[peerId]; }
+        this._callSig[peerId] = 'off';
+        return;
+      }
+      const sig = (myHas?'1':'0') + (theirsWant?'1':'0');
+      if(this._callSig[peerId] !== sig || !this.mediaConns[peerId]){
+        this._callSig[peerId] = sig;
+        this._reconnectCall(peerId);
+      }
+    });
+  }
+  refreshCalls(){ this.syncCalls(); }
+  _reconnectCall(peerId){
+    if(this.mediaConns[peerId]){ try{ this.mediaConns[peerId].close(); }catch(e){} delete this.mediaConns[peerId]; }
+    if(!this.peer) return;
+    try{
+      const call = this.peer.call(peerId, this.localStream || this._emptyStream());
+      if(!call) return;
+      this.mediaConns[peerId] = call;
+      call.on('stream', (stream)=>{ this._fireStream(peerId, stream); });
+      call.on('close', ()=>{ if(this.mediaConns[peerId]===call) delete this.mediaConns[peerId]; this._fireStream(peerId, null); this._fireCallState(peerId, 'closed'); });
+      call.on('error', ()=>{ this._fireCallState(peerId, 'reconnecting'); });
+      this._watchIceState(peerId, call);
+    }catch(e){}
+  }
+  _handleIncomingCall(call){
+    try{ call.answer(this.localStream || this._emptyStream()); }catch(e){ return; }
+    this.mediaConns[call.peer] = call;
+    call.on('stream', (stream)=>{ this._fireStream(call.peer, stream); });
+    call.on('close', ()=>{ if(this.mediaConns[call.peer]===call) delete this.mediaConns[call.peer]; this._fireStream(call.peer, null); this._fireCallState(call.peer, 'closed'); });
+    call.on('error', ()=>{ this._fireCallState(call.peer, 'reconnecting'); });
+    this._watchIceState(call.peer, call);
+  }
+  _fireStream(peerId, stream){
+    if(stream) this._watchSpeaking(peerId, stream);
+    else { this._stopWatchSpeaking(peerId); this._fireSpeaking(peerId, false); }
+    this.streamHandlers.forEach(cb=>{ try{ cb(peerId, stream); }catch(e){} });
+  }
+  onStream(cb){ this.streamHandlers.push(cb); return ()=>{ this.streamHandlers = this.streamHandlers.filter(f=>f!==cb); }; }
+  async initHost(roomCode){
+    this.isHost = true;
+    this.hostId = 'trs6rm-'+roomCode;
+    this.myId = this.hostId;
+    await this._createPeer(this.hostId);
+    this.peer.on('connection', (conn)=>{
+      conn.on('open', ()=>{ this.conns[conn.peer] = conn; this._wire(conn); });
+    });
+    this.peer.on('disconnected', ()=>{ try{ this.peer.reconnect(); }catch(e){} });
+  }
+  async initJoin(roomCode){
+    this.isHost = false;
+    this.hostId = 'trs6rm-'+roomCode;
+    this.myId = 'p'+Math.random().toString(36).slice(2,9);
+    await this._createPeer(this.myId);
+    this.peer.on('disconnected', ()=>{ try{ this.peer.reconnect(); }catch(e){} });
+    await new Promise((resolve,reject)=>{
+      let settled = false;
+      const conn = this.peer.connect(this.hostId, {reliable:true});
+      conn.on('open', ()=>{
+        if(settled) return; settled = true;
+        this.conns[this.hostId] = conn; this._wire(conn); resolve();
+      });
+      conn.on('error', (e)=>{ if(!settled){ settled=true; reject(e); } });
+      this.peer.on('error', (e)=>{ if(!settled && e && e.type==='peer-unavailable'){ settled=true; reject(e); } });
+      setTimeout(()=>{ if(!settled){ settled=true; reject(new Error('timeout')); } }, 9000);
+    });
+  }
+  _wire(conn){
+    conn.on('data', (msg)=>{
+      if(!msg || !msg.type) return;
+      if(msg.type==='presence'){
+        this.remotePresences[msg.from] = msg.data;
+        if(this.isHost) this._broadcastState();
+        this._firePeers();
+      } else if(msg.type==='state'){
+        this.remotePresences = msg.data || {};
+        this._firePeers();
+      } else if(msg.type==='chat'){
+        if(this.isHost) this._broadcastChat(msg.data, conn.peer);
+        this.chatHandlers.forEach(cb=>cb({data:msg.data, isMe:false}));
+      }
+    });
+    conn.on('close', ()=>{
+      delete this.conns[conn.peer];
+      delete this.remotePresences[conn.peer];
+      if(this.isHost) this._broadcastState();
+      this._firePeers();
+    });
+  }
+  _broadcastState(){
+    const state = Object.assign({}, this.remotePresences, {[this.myId]:this.myPresence});
+    Object.values(this.conns).forEach(c=>{ try{ c.send({type:'state', data:state}); }catch(e){} });
+  }
+  _broadcastChat(data, exceptPeerId){
+    Object.entries(this.conns).forEach(([pid,c])=>{
+      if(pid!==exceptPeerId){ try{ c.send({type:'chat', data}); }catch(e){} }
+    });
+  }
+  _firePeers(){ this.peersHandlers.forEach(cb=>{ try{ cb(); }catch(e){} }); }
+  async presence(data){
+    this.myPresence = Object.assign({}, this.myPresence, data);
+    if(this.isHost){
+      this._broadcastState();
+    } else {
+      const conn = this.conns[this.hostId];
+      if(conn) conn.send({type:'presence', from:this.myId, data:this.myPresence});
+    }
+    this._firePeers();
+  }
+  peers(){
+    const list = [{isMe:true, id:this.myId, presence:this.myPresence}];
+    Object.entries(this.remotePresences).forEach(([id,p])=>{
+      if(id!==this.myId) list.push({isMe:false, id, presence:p});
+    });
+    return list;
+  }
+  onPeers(cb){ this.peersHandlers.push(cb); return ()=>{ this.peersHandlers = this.peersHandlers.filter(f=>f!==cb); }; }
+  on(event, cb){ if(event==='chat') this.chatHandlers.push(cb); return ()=>{ this.chatHandlers = this.chatHandlers.filter(f=>f!==cb); }; }
+  async emit(event, data){
+    if(event!=='chat') return;
+    this.chatHandlers.forEach(cb=>cb({data, isMe:true}));
+    if(this.isHost){
+      this._broadcastChat(data, null);
+    } else {
+      const conn = this.conns[this.hostId];
+      if(conn) conn.send({type:'chat', data});
+    }
+  }
+  destroy(){
+    this.stopMic();
+    Object.keys(this._analysers).forEach(id=>this._stopWatchSpeaking(id));
+    if(this._audioCtx){ try{ this._audioCtx.close(); }catch(e){} this._audioCtx = null; }
+    Object.values(this.conns).forEach(c=>{ try{ c.close(); }catch(e){} });
+    if(this.peer){ try{ this.peer.destroy(); }catch(e){} }
+    this.conns = {}; this.remotePresences = {}; this.peer = null;
+  }
+}
+
+let roomNS = null, myRoomCode = null, myName = '', isHost = false;
+let mpTest = [], mpIdx = 0, mpScore = 0, mpAnswers = [];
+let chatLog = [], unsubChat = null, unsubPeers = null, unsubStream = null, unsubSpeaking = null, unsubCallState = null;
+let mpScreen = 'home'; // home | lobby | battle | results
+let micOn = false, myLastRound = 0;
+const QCOUNT_OPTIONS = [10,15,20,25,30,40,50];
+let hostQCount = Math.min(25, POOL.length);
+const ROUND_OPTIONS = [1,3,5,7,10]; // số round trong 1 trận đấu, giống Best-of-N ngoài đời thật
+let hostMatchRounds = 3;
+
+function genRoomCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for(let i=0;i<4;i++) c += chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+function wireRoomEvents(){
+  if(unsubChat) unsubChat();
+  if(unsubPeers) unsubPeers();
+  if(unsubStream) unsubStream();
+  if(unsubSpeaking) unsubSpeaking();
+  if(unsubCallState) unsubCallState();
+  unsubSpeaking = roomNS.onSpeaking((peerId, on)=>{
+    document.querySelectorAll(`[data-peer="${peerId}"]`).forEach(el=>el.classList.toggle('speaking', on));
+  });
+  unsubCallState = roomNS.onCallState((peerId, state)=>{
+    document.querySelectorAll(`.callstate[data-peer-state="${peerId}"]`).forEach(el=>{
+      el.classList.toggle('reconnecting', state==='reconnecting');
+      el.classList.toggle('failed', false);
+      el.textContent = state==='reconnecting' ? '🔄' : '';
+      el.title = state==='reconnecting' ? 'Đang kết nối lại giọng nói...' : '';
+    });
+  });
+  unsubChat = roomNS.on('chat', (msg)=>{
+    if(!msg.data || msg.data.roomCode !== myRoomCode) return;
+    chatLog.push({name:msg.data.name, text:msg.data.text, isMe:msg.isMe});
+    if(chatLog.length>50) chatLog.shift();
+    if(mpScreen==='lobby') renderLobby();
+  });
+  unsubPeers = roomNS.onPeers(()=>{
+    if(mpScreen==='lobby') renderLobby();
+    if(mpScreen==='battle') renderLeaderboard();
+    checkHostStarted();
+    if(roomNS) roomNS.refreshCalls();
+  });
+  unsubStream = roomNS.onStream((peerId, stream)=>{
+    let el = document.getElementById('voice-'+peerId);
+    if(stream){
+      if(!el){
+        el = document.createElement('audio');
+        el.id = 'voice-'+peerId; el.autoplay = true; el.playsInline = true; el.style.display = 'none';
+        document.body.appendChild(el);
+      }
+      el.srcObject = stream;
+      el.muted = false; el.volume = 1;
+      attemptPlayVoiceEl(el);
+    } else if(el){ el.remove(); }
+  });
+}
+
+/* Cố phát 1 thẻ <audio> giọng nói; nếu trình duyệt (hay gặp trên Safari/điện
+   thoại) chặn tự phát vì chưa có thao tác người dùng, thẻ này sẽ được thử
+   lại ngay khi có cú chạm/click đầu tiên tiếp theo, qua unlockAllVoiceAudio(). */
+function attemptPlayVoiceEl(el){
+  const p = el.play();
+  if(p && p.catch) p.catch(()=>{});
+}
+function unlockAllVoiceAudio(){
+  document.querySelectorAll('audio[id^="voice-"]').forEach(el=>{
+    if(el.paused) attemptPlayVoiceEl(el);
+  });
+}
+/* Lưới an toàn chung: bất kỳ chạm/click nào trong trang cũng thử mở khóa phát
+   âm thanh của tất cả các cuộc gọi thoại đang có — hữu ích trên điện thoại
+   (đặc biệt iPhone) khi âm thanh người khác đến trước khi mình kịp thao tác. */
+['pointerdown','touchend','click'].forEach(evt=>{
+  document.addEventListener(evt, unlockAllVoiceAudio, {passive:true});
+});
+
+function removeAllVoiceAudio(){
+  document.querySelectorAll('audio[id^="voice-"]').forEach(el=>el.remove());
+}
+
+function myPeersInRoom(){
+  if(!roomNS || !myRoomCode) return [];
+  return roomNS.peers().filter(p => p.presence && p.presence.roomCode === myRoomCode);
+}
+
+function renderMpHome(){
+  mpScreen = 'home';
+  myName = localStorage.getItem('trs6_name') || '';
+  mpHome.innerHTML = `
+    <div class="mp-card">
+      <div class="starticon">🤼</div>
+      <h2>Đấu bạn bè trực tiếp</h2>
+      <p>Tạo phòng, gửi mã cho bạn bè (2–4 người), cùng vào và thi đấu real-time — điểm số cập nhật trực tiếp, có khung chat riêng.</p>
+      <input class="nameinput" id="mpNameInput" placeholder="Nhập tên của bạn" value="${myName}" maxlength="16">
+      <div class="mp-actions">
+        <button class="mp-btn create" id="mpCreateBtn">➕ Tạo phòng mới</button>
+        <div class="joinrow">
+          <input id="mpCodeInput" placeholder="MÃ PHÒNG" maxlength="4">
+          <button class="mp-btn join" id="mpJoinBtn">Vào phòng</button>
+        </div>
+      </div>
+      <div class="mp-note">⚠️ Cả nhóm cần <b>mở cùng đường link bài này</b> và <b>online cùng lúc</b> — đây là phòng thi trực tiếp, không lưu lại lịch sử sau khi mọi người rời trang. Trong phòng chờ, bạn có thể bật mic để nói chuyện trực tiếp với bạn bè, chọn số câu hỏi và làm mới bộ đề bất cứ lúc nào. Kết nối là trực tiếp giữa các máy (không qua GitHub) — nếu mạng của ai đó chặn kết nối trực tiếp (một số mạng công ty/trường học/VPN), việc tạo/vào phòng, hoặc bật mic có thể không thành công, hãy thử wifi nhà hoặc 4G. Mic cần trang chạy trên HTTPS và bạn đồng ý cấp quyền micro cho trình duyệt.</div>
+    </div>`;
+  document.getElementById('mpCreateBtn').onclick = createRoom;
+  document.getElementById('mpJoinBtn').onclick = joinRoom;
+}
+
+async function createRoom(){
+  const nameVal = document.getElementById('mpNameInput').value.trim();
+  if(!nameVal){ alert('Bạn nhập tên trước nhé!'); return; }
+  myName = nameVal; localStorage.setItem('trs6_name', myName);
+  const btn = document.getElementById('mpCreateBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Đang tạo phòng...'; }
+  let room = null, code = null, ok = false;
+  for(let attempt=0; attempt<4 && !ok; attempt++){
+    code = genRoomCode();
+    room = new RoomP2P();
+    try{ await room.initHost(code); ok = true; }
+    catch(e){ try{ room.destroy(); }catch(_){} }
+  }
+  if(btn){ btn.disabled = false; btn.textContent = '➕ Tạo phòng mới'; }
+  if(!ok){
+    alert('Không thể tạo phòng lúc này — có thể mạng của bạn đang chặn kết nối trực tiếp (WebRTC). Thử đổi sang mạng khác (wifi nhà, 4G) rồi thử lại nhé.');
+    return;
+  }
+  roomNS = room;
+  myRoomCode = code;
+  isHost = true;
+  wireRoomEvents();
+  hostQCount = Math.min(25, POOL.length);
+  hostMatchRounds = 3;
+  const qIdx = shuffle(POOL.map((_,i)=>i)).slice(0, hostQCount);
+  myLastRound = 0;
+  await roomNS.presence({roomCode:myRoomCode, name:myName, role:'host', status:'lobby', qIdx, qCount:hostQCount, matchRounds:hostMatchRounds, round:0, score:0, totalScore:0, progress:0, finished:false, micOn:false, ts:Date.now()});
+  chatLog = [];
+  renderLobby();
+}
+
+async function joinRoom(){
+  const nameVal = document.getElementById('mpNameInput').value.trim();
+  const codeVal = document.getElementById('mpCodeInput').value.trim().toUpperCase();
+  if(!nameVal){ alert('Bạn nhập tên trước nhé!'); return; }
+  if(!codeVal){ alert('Nhập mã phòng bạn bè gửi cho bạn nhé!'); return; }
+  myName = nameVal; localStorage.setItem('trs6_name', myName);
+  const btn = document.getElementById('mpJoinBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Đang vào phòng...'; }
+  let room = null, ok = false;
+  for(let attempt=0; attempt<3 && !ok; attempt++){
+    room = new RoomP2P();
+    try{ await room.initJoin(codeVal); ok = true; }
+    catch(e){ try{ room.destroy(); }catch(_){} }
+  }
+  if(!ok){
+    if(btn){ btn.disabled = false; btn.textContent = 'Vào phòng'; }
+    alert('Không vào được phòng này. Kiểm tra lại mã phòng, đảm bảo chủ phòng vẫn đang mở trang, hoặc thử mạng khác (wifi nhà, 4G) nếu mạng của bạn chặn kết nối trực tiếp.');
+    return;
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Vào phòng'; }
+  roomNS = room;
+  myRoomCode = codeVal;
+  isHost = false;
+  wireRoomEvents();
+  myLastRound = 0;
+  await roomNS.presence({roomCode:myRoomCode, name:myName, role:'player', status:'lobby', score:0, totalScore:0, progress:0, finished:false, micOn:false, ts:Date.now()});
+  chatLog = [];
+  renderLobby();
+}
+
+function renderLobby(){
+  mpScreen = 'lobby';
+  mpHome.style.display = 'none';
+  mpLobby.style.display = 'block';
+  mpBattle.style.display = 'none';
+  const peers = myPeersInRoom();
+  const host = peers.find(p=>p.presence.role==='host');
+  const others = peers.filter(p=>!p.isMe).length;
+  const curQCount = host ? (host.presence.qCount || (host.presence.qIdx||[]).length || hostQCount) : hostQCount;
+  const matchRounds = host ? (host.presence.matchRounds || hostMatchRounds) : hostMatchRounds;
+  const curRound = host ? (host.presence.round || 0) : 0;
+  const matchStarted = curRound > 0;
+  const finishedCount = peers.filter(p=>p.presence.finished).length;
+  const totalCount = peers.length;
+  const allFinished = totalCount > 0 && finishedCount === totalCount;
+  const matchOver = matchStarted && curRound >= matchRounds && allFinished;
+
+  const qSettingsHtml = (isHost && !matchStarted) ? `
+    <div class="mp-qsettings">
+      <div class="mp-qsettings-label">🎲 Số lượng câu hỏi mỗi round</div>
+      <div class="qcountbtns">
+        ${QCOUNT_OPTIONS.filter(n=>n<=POOL.length).map(n=>`<button class="qcbtn ${n===curQCount?'active':''}" data-n="${n}">${n}</button>`).join('')}
+        ${POOL.length && !QCOUNT_OPTIONS.includes(POOL.length) ? `<button class="qcbtn ${POOL.length===curQCount?'active':''}" data-n="${POOL.length}">${POOL.length} (tối đa)</button>` : ''}
+      </div>
+      <button class="rerollbtn" id="mpRerollBtn">🔄 Làm mới câu hỏi (random lại bộ đề)</button>
+    </div>`
+    : (!matchStarted ? `<div class="mp-qsettings"><span class="qcount-readonly">🎲 Chủ phòng đã chọn <b>${curQCount}</b> câu hỏi ngẫu nhiên mỗi round.</span></div>` : '');
+
+  const roundSettingsHtml = (!matchStarted) ? `
+    <div class="mp-qsettings">
+      <div class="mp-qsettings-label">🎯 Số round trong trận đấu (giống 1 trận đấu thực thụ)</div>
+      ${isHost ? `
+      <div class="qcountbtns">
+        ${ROUND_OPTIONS.map(n=>`<button class="rcbtn qcbtn ${n===matchRounds?'active':''}" data-n="${n}">${n===1?'1 round':n+' round'}</button>`).join('')}
+      </div>` : `<span class="qcount-readonly">Chủ phòng đã chọn <b>${matchRounds}</b> round cho trận này.</span>`}
+    </div>` : '';
+
+  const matchStatusHtml = matchStarted ? `
+    <div class="mp-qsettings">
+      <div class="mp-qsettings-label">🎯 Trận đấu — Round ${Math.min(curRound, matchRounds)}/${matchRounds}${matchOver?' — Đã kết thúc!':''}</div>
+      <div class="mp-note" style="margin-top:2px; margin-bottom:10px; text-align:center;">
+        ${matchOver ? '🏁 Tất cả đã hoàn thành trận đấu!' : (allFinished ? '✅ Mọi người đã xong round này!' : `⏳ ${finishedCount}/${totalCount} người đã hoàn thành round ${curRound}...`)}
+      </div>
+      ${buildFinalRankingHtml()}
+    </div>` : '';
+
+  let startAreaHtml;
+  if(!matchStarted){
+    startAreaHtml = isHost ? `<button class="mp-btn create" id="mpStartBtn" ${others<1?'disabled style="opacity:.5;"':''}>🚀 Bắt đầu trận đấu (${matchRounds} round)${others<1?' — đợi bạn bè vào':''}</button>`
+             : `<div class="mp-note" style="text-align:center;">⏳ Đợi chủ phòng (${host?host.presence.name:'...'}) bấm bắt đầu...</div>`;
+  } else if(matchOver){
+    startAreaHtml = isHost ? `<button class="mp-btn create" id="mpStartBtn">🔄 Chơi trận đấu mới</button>`
+             : `<div class="mp-note" style="text-align:center;">⏳ Đợi chủ phòng bắt đầu trận đấu mới...</div>`;
+  } else if(allFinished){
+    startAreaHtml = isHost ? `<button class="mp-btn create" id="mpStartBtn">▶️ Bắt đầu round ${curRound+1}/${matchRounds}</button>`
+             : `<div class="mp-note" style="text-align:center;">⏳ Mọi người đã xong — đợi chủ phòng bắt đầu round tiếp theo...</div>`;
+  } else {
+    startAreaHtml = isHost ? `<button class="mp-btn create" id="mpStartBtn" disabled style="opacity:.5;">🔒 Chờ mọi người chơi xong round ${curRound} (${finishedCount}/${totalCount})</button>`
+             : `<div class="mp-note" style="text-align:center;">⏳ Đang chờ mọi người hoàn thành round ${curRound} (${finishedCount}/${totalCount})...</div>`;
+  }
+
+  mpLobby.innerHTML = `
+    <div class="roomcode-box">
+      <div class="roomcode-label">MÃ PHÒNG — GỬI CHO BẠN BÈ</div>
+      <div class="roomcode-value">${myRoomCode}</div>
+      <div class="roomcode-hint">${peers.length} người đã vào phòng</div>
+      <button class="copybtn" id="copyCodeBtn">📋 Sao chép mã</button>
+    </div>
+    <div class="mp-toprow">
+      <button class="micbtn ${micOn?'mic-active':''}" id="mpMicBtn">${micOn ? '🔴 Tắt mic' : '🎤 Bật mic để nói chuyện'}</button>
+    </div>
+    ${matchStatusHtml}
+    ${qSettingsHtml}
+    ${roundSettingsHtml}
+    <div class="player-list" id="playerList"></div>
+    <div class="chatbox">
+      <div class="lb-title">💬 Trò chuyện</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input id="chatInput" placeholder="Nhắn gì đó..." maxlength="120">
+        <button id="chatSendBtn">Gửi</button>
+      </div>
+    </div>
+    ${startAreaHtml}
+    <button class="mp-btn join" id="mpLeaveBtn" style="margin-top:10px;">← Rời phòng</button>
+  `;
+  renderPlayerList(peers);
+  renderChatMessages();
+  document.getElementById('copyCodeBtn').onclick = ()=>{
+    navigator.clipboard?.writeText(myRoomCode).catch(()=>{});
+    document.getElementById('copyCodeBtn').textContent = '✅ Đã chép!';
+  };
+  document.getElementById('chatSendBtn').onclick = sendChat;
+  document.getElementById('chatInput').onkeydown = (e)=>{ if(e.key==='Enter') sendChat(); };
+  document.getElementById('mpLeaveBtn').onclick = leaveRoom;
+  document.getElementById('mpMicBtn').onclick = toggleMic;
+  if(isHost){
+    const startBtn = document.getElementById('mpStartBtn');
+    if(startBtn) startBtn.onclick = matchOver ? resetMatch : startBattle;
+    document.querySelectorAll('.qcbtn:not(.rcbtn)').forEach(btn=>{
+      btn.onclick = ()=>setQuestionCount(parseInt(btn.dataset.n));
+    });
+    document.querySelectorAll('.rcbtn').forEach(btn=>{
+      btn.onclick = ()=>setMatchRounds(parseInt(btn.dataset.n));
+    });
+    const rerollBtn = document.getElementById('mpRerollBtn');
+    if(rerollBtn) rerollBtn.onclick = rerollQuestions;
+  }
+}
+
+async function setQuestionCount(n){
+  if(!isHost || !roomNS) return;
+  hostQCount = n;
+  const qIdx = shuffle(POOL.map((_,i)=>i)).slice(0, n);
+  await roomNS.presence({qIdx, qCount:n, ts:Date.now()});
+  renderLobby();
+}
+
+async function setMatchRounds(n){
+  if(!isHost || !roomNS) return;
+  hostMatchRounds = n;
+  await roomNS.presence({matchRounds:n, ts:Date.now()});
+  renderLobby();
+}
+
+async function rerollQuestions(){
+  if(!isHost || !roomNS) return;
+  const btn = document.getElementById('mpRerollBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '🔄 Đang random lại...'; }
+  const qIdx = shuffle(POOL.map((_,i)=>i)).slice(0, hostQCount);
+  await roomNS.presence({qIdx, qCount:hostQCount, ts:Date.now()});
+  renderLobby();
+}
+
+function refreshMicScreen(){
+  if(mpScreen==='lobby') renderLobby();
+  else if(mpScreen==='battle') renderLeaderboard();
+}
+
+async function toggleMic(){
+  const btn = document.getElementById('mpMicBtn') || document.getElementById('mpMicBtnBattle');
+  /* Bấm nút này là một thao tác chạm/click thật của người dùng — tận dụng luôn
+     để "mở khóa" phát âm thanh trên điện thoại (đặc biệt iPhone Safari chặn
+     tự phát audio nếu chưa có thao tác của người dùng), phòng khi audio của
+     người khác đã tới trước đó nhưng chưa phát được. */
+  unlockAllVoiceAudio();
+  if(!micOn){
+    if(btn){ btn.disabled = true; btn.textContent = '🎤 Đang bật mic...'; }
+    const ok = await roomNS.enableMic();
+    if(btn) btn.disabled = false;
+    if(ok){
+      micOn = true;
+      if(roomNS) await roomNS.presence({micOn:true, ts:Date.now()});
+    } else {
+      alert('Không thể dùng micro. Hãy cho phép quyền micro cho trang này trong trình duyệt (và đảm bảo trang chạy trên HTTPS) rồi thử lại nhé.');
+    }
+    refreshMicScreen();
+  } else {
+    roomNS.setMicEnabled(false);
+    micOn = false;
+    if(roomNS) await roomNS.presence({micOn:false, ts:Date.now()});
+    refreshMicScreen();
+  }
+}
+
+function renderPlayerList(peers){
+  const list = document.getElementById('playerList');
+  if(!list) return;
+  list.innerHTML = peers.map(p=>`
+    <div class="player-row" data-peer="${p.id}">
+      <span class="player-dot"></span>
+      <span class="player-name">${p.presence.name || 'Ẩn danh'}${p.isMe?' (bạn)':''}${p.presence.micOn?' <span class="player-mic" title="Đang bật mic">🎙️</span>':''}${!p.isMe?`<span class="callstate" data-peer-state="${p.id}"></span>`:''}</span>
+      <span class="player-role">${p.presence.role==='host'?'👑 Chủ phòng':'Người chơi'}</span>
+    </div>`).join('');
+}
+
+function renderChatMessages(){
+  const box = document.getElementById('chatMessages');
+  if(!box) return;
+  box.innerHTML = chatLog.map(m=>`<div class="chat-msg ${m.isMe?'me':''}"><b>${m.name}:</b> ${m.text}</div>`).join('') || `<div class="chat-msg" style="color:var(--ink-soft);">Chưa có tin nhắn nào — chào mọi người đi!</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text || !roomNS) return;
+  input.value = '';
+  try{ await roomNS.emit('chat', {roomCode:myRoomCode, name:myName, text}); }catch(e){}
+}
+
+function checkHostStarted(){
+  if(mpScreen !== 'lobby' || isHost) return;
+  const peers = myPeersInRoom();
+  const host = peers.find(p=>p.presence.role==='host');
+  if(host && host.presence.status==='playing' && Array.isArray(host.presence.qIdx) && (host.presence.round||0) !== myLastRound){
+    const newRound = host.presence.round || 0;
+    const isNewMatch = newRound === 1; // round 1 luôn đánh dấu điểm bắt đầu của 1 trận đấu mới
+    myLastRound = newRound;
+    beginBattle(host.presence.qIdx, isNewMatch);
+  }
+}
+
+async function startBattle(){
+  const peers = myPeersInRoom();
+  const me = peers.find(p=>p.isMe);
+  const curRound = (me && me.presence.round) || 0;
+  const matchRounds = (me && me.presence.matchRounds) || hostMatchRounds;
+  if(curRound > 0){
+    if(curRound >= matchRounds) return; // trận đã xong — phải bấm "Chơi trận đấu mới"
+    const allFinished = peers.length>0 && peers.every(p=>p.presence.finished);
+    if(!allFinished) return; // an toàn: nút cũng đã bị khóa/ẩn ở renderLobby khi chưa đủ điều kiện
+  }
+  const nextRound = curRound + 1;
+  myLastRound = nextRound;
+  /* Random lại bộ câu hỏi cho mỗi round mới trong trận — giống 1 trận đấu thực thụ,
+     mỗi round không lặp lại y hệt câu hỏi của round trước. */
+  const qIdx = shuffle(POOL.map((_,i)=>i)).slice(0, hostQCount);
+  const patch = {status:'playing', round:nextRound, matchRounds, qIdx, qCount:hostQCount, score:0, progress:0, finished:false, ts:Date.now()};
+  if(curRound === 0) patch.totalScore = 0; // round 1 của 1 trận mới → xoá điểm tổng trận trước
+  await roomNS.presence(patch);
+  beginBattle(qIdx, curRound === 0);
+}
+
+async function resetMatch(){
+  if(!isHost || !roomNS) return;
+  const qIdx = shuffle(POOL.map((_,i)=>i)).slice(0, hostQCount);
+  await roomNS.presence({round:0, status:'lobby', matchRounds:hostMatchRounds, qIdx, qCount:hostQCount, score:0, totalScore:0, progress:0, finished:false, ts:Date.now()});
+  myLastRound = 0;
+  renderLobby();
+}
+
+function beginBattle(qIdx, isNewMatch){
+  mpTest = qIdx.map(i=>{
+    const src = POOL[i];
+    const order = shuffle(src.opts.map((_,k)=>k));
+    return {w:src.w, s:src.s, opts:order.map(k=>src.opts[k]), correct:order.indexOf(src.correct), exp:src.exp, emoji:src.emoji, tip:src.tip, trans:src.trans};
+  });
+  mpIdx = 0; mpScore = 0; mpAnswers = new Array(mpTest.length).fill(null);
+  if(!isHost && roomNS){
+    const patch = {score:0, progress:0, finished:false, ts:Date.now()};
+    if(isNewMatch) patch.totalScore = 0; // round 1 của 1 trận mới → xoá điểm tổng trận trước
+    roomNS.presence(patch);
+  }
+  mpScreen = 'battle';
+  mpLobby.style.display = 'none';
+  mpBattle.style.display = 'block';
+  renderLeaderboard();
+  renderMpQuestion();
+}
+
+function renderLeaderboard(){
+  if(!lbPanel) return;
+  const peers = myPeersInRoom();
+  const sorted = peers.slice().sort((a,b)=> (b.presence.score||0) - (a.presence.score||0));
+  const maxScore = Math.max(1, ...sorted.map(p=>p.presence.score||0));
+  lbPanel.innerHTML = `
+    <div class="mp-toprow" style="margin-bottom:12px;">
+      <button class="micbtn ${micOn?'mic-active':''}" id="mpMicBtnBattle">${micOn ? '🔴 Tắt mic' : '🎤 Bật mic'}</button>
+    </div>
+    <div class="lb-title">🏆 Bảng điểm trực tiếp</div>
+    ${sorted.map((p,i)=>{
+      const c = colorFor(i);
+      const done = p.presence.finished;
+      return `<div class="lb-row" data-peer="${p.id}">
+        <span class="lb-rank">${i+1}</span>
+        <span class="lb-name">${p.presence.name||'?'}${p.isMe?' 🫵':''}${p.presence.micOn?' 🎙️':''}${!p.isMe?`<span class="callstate" data-peer-state="${p.id}"></span>`:''}</span>
+        <span class="lb-bar-track"><span class="lb-bar-fill" style="width:${(p.presence.score||0)/maxScore*100}%; background:${c};"></span></span>
+        <span class="lb-score">${p.presence.score||0}<span style="opacity:.6; font-size:.8em;"> (tổng ${p.presence.totalScore||0})</span></span>
+        <span class="lb-finished">${done?'✅':''}</span>
+      </div>`;
+    }).join('')}`;
+  const micBtnB = document.getElementById('mpMicBtnBattle');
+  if(micBtnB) micBtnB.onclick = toggleMic;
+}
+
+function renderMpQuestion(){
+  if(mpIdx >= mpTest.length){ finishMpForMe(); return; }
+  const q = mpTest[mpIdx];
+  const c = colorFor(mpIdx);
+  const optsHtml = q.opts.map((o,i)=>{
+    const letter = String.fromCharCode(65+i);
+    return `<button class="opt" data-i="${i}"><span class="letter">${letter}</span><span>${o}</span></button>`;
+  }).join('');
+  mpQuizArea.innerHTML = `
+    <div class="qcard">
+      <div class="qhead">
+        <div class="qnum-badge" style="background:${c};">${mpIdx+1}</div>
+        <div class="qhint">Câu ${mpIdx+1}/${mpTest.length} ${q.emoji}</div>
+      </div>
+      <p class="sentence">${q.s.replace('___', `<span class="blank" style="background:${hexToRgba(c,.16)}; color:${c};">＿＿＿</span>`)}</p>
+      <div class="options">${optsHtml}</div>
+      <div class="explain" id="mpExplainBox"></div>
+      <div class="actions">
+        <span></span>
+        <button class="next" id="mpNextBtn">Câu tiếp theo →</button>
+      </div>
+    </div>`;
+  document.querySelectorAll('#mpQuizArea .opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>onMpAnswer(parseInt(btn.dataset.i)));
+  });
+}
+
+async function onMpAnswer(choice){
+  const q = mpTest[mpIdx];
+  const correct = choice === q.correct;
+  mpAnswers[mpIdx] = correct;
+  if(correct) mpScore++;
+  const buttons = document.querySelectorAll('#mpQuizArea .opt');
+  buttons.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === q.correct){ b.classList.add('correct'); b.insertAdjacentHTML('beforeend','<span class="mark correct">🎉</span>'); }
+    if(i === choice && choice !== q.correct){ b.classList.add('wrong'); b.insertAdjacentHTML('beforeend','<span class="mark wrong">💥</span>'); }
+  });
+  const box = document.getElementById('mpExplainBox');
+  box.classList.add('show', correct ? 'right-verdict' : 'wrong-verdict');
+  box.innerHTML = `
+    <div class="explain-top">
+      <div class="explain-emoji">${q.emoji}</div>
+      <div><div class="verdict">${correct ? 'Chính xác, quá đỉnh!' : 'Chưa đúng — đáp án là "'+q.opts[q.correct]+'"'}</div><div class="wordtag">${q.w}</div></div>
+    </div>
+    ${buildExplainBody(q)}`;
+  document.getElementById('mpNextBtn').classList.add('show');
+  document.getElementById('mpNextBtn').onclick = ()=>{ mpIdx++; renderMpQuestion(); };
+  if(roomNS){
+    try{ await roomNS.presence({score:mpScore, progress:mpIdx+1, ts:Date.now()}); }catch(e){}
+  }
+  renderLeaderboard();
+}
+
+function buildFinalRankingHtml(){
+  const peers = myPeersInRoom();
+  const sorted = peers.slice().sort((a,b)=> (b.presence.totalScore||0) - (a.presence.totalScore||0));
+  const medals = ['🥇','🥈','🥉'];
+  return `
+    <div class="final-rank">
+      <div class="final-rank-title">🏆 Bảng xếp hạng (điểm tổng cả trận)</div>
+      ${sorted.map((p,i)=>`
+        <div class="final-rank-row ${p.isMe?'me':''}">
+          <span class="final-rank-medal">${medals[i] || (i+1)}</span>
+          <span class="final-rank-name">${p.presence.name||'?'}${p.isMe?' (bạn)':''}</span>
+          <span class="final-rank-score">${p.presence.totalScore||0}${p.presence.finished?' ✅':' ⏳'}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function finishMpForMe(){
+  const peers = myPeersInRoom();
+  const me = peers.find(p=>p.isMe);
+  const newTotal = (me && me.presence.totalScore || 0) + mpScore;
+  if(roomNS){ try{ await roomNS.presence({finished:true, totalScore:newTotal, ts:Date.now()}); }catch(e){} }
+  const host = peers.find(p=>p.presence.role==='host');
+  const matchRounds = (host && host.presence.matchRounds) || hostMatchRounds;
+  const curRound = (host && host.presence.round) || myLastRound || 1;
+  const isLastRound = curRound >= matchRounds;
+  const total = mpTest.length;
+  const pct = Math.round(mpScore/total*100);
+  mpQuizArea.innerHTML = `
+    <div class="done">
+      <div class="resultcard">
+        <div class="qhint">BẠN ĐÃ HOÀN THÀNH ROUND ${curRound}/${matchRounds}</div>
+        <div class="bigscore">${mpScore}/${total}</div>
+        <div class="pct">${pct}% chính xác round này · Điểm tổng trận: <b>${newTotal}</b></div>
+        ${buildFinalRankingHtml()}
+        <div class="mp-note" style="text-align:center; margin-top:12px;">${isLastRound ? '🏁 Đây là round cuối cùng của trận đấu — bấm về phòng chờ để xem kết quả chung cuộc!' : '⏳ Đợi tất cả người chơi hoàn thành round này — chủ phòng sẽ bắt đầu round tiếp theo ngay khi mọi người xong.'}</div>
+        <div class="resultbtns">
+          <button class="btn-ghost" id="mpBackLobbyBtn">← Về phòng chờ</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('mpBackLobbyBtn').onclick = backToLobbyAfterGame;
+  renderLeaderboard();
+}
+
+function backToLobbyAfterGame(){
+  mpScreen = 'lobby';
+  mpBattle.style.display = 'none';
+  renderLobby();
+}
+
+async function leaveRoom(){
+  if(roomNS){ try{ roomNS.destroy(); }catch(e){} }
+  removeAllVoiceAudio();
+  roomNS = null; myRoomCode = null; isHost = false; chatLog = [];
+  micOn = false; myLastRound = 0;
+  mpLobby.style.display = 'none';
+  mpBattle.style.display = 'none';
+  mpHome.style.display = 'block';
+  renderMpHome();
+}
+
+renderMpHome();
+
+
+renderChapterPicker();
+renderStartScreen();
+</script>
+</body>
+</html>
